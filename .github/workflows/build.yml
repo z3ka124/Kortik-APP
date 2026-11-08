@@ -1,0 +1,128 @@
+name: Build Kortik Listener (Windows)
+
+on:
+  push:
+    tags: ["listener-v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Verzija (npr. 1.0.0)"
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: write
+
+defaults:
+  run:
+    shell: pwsh
+
+jobs:
+  build:
+    name: Test + build + installer
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Verzija
+        id: ver
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            $v = "${{ github.event.inputs.version }}"
+          } else {
+            $v = "${{ github.ref_name }}".Replace("listener-v", "")
+          }
+          "version=$v" >> $env:GITHUB_OUTPUT
+          Write-Host "Verzija: $v"
+
+      - name: Zavisnosti
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pyinstaller
+
+      - name: Testovi
+        run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Preuzmi wake word model
+        run: |
+          # Model nije u ovom repou (velik je) — skidamo ga sa Kortik repoa
+          $dest = "models/sherpa-kws"
+          New-Item -ItemType Directory -Force -Path $dest | Out-Null
+          $base = "https://raw.githubusercontent.com/z3ka124/Kortik-Bot_backup/main/Kortik-VoiceListener/models/sherpa-kws"
+          foreach ($f in @("tokens.txt","bpe.model",
+                           "encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+                           "decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
+                           "joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx")) {
+            Invoke-WebRequest -Uri "$base/$f" -OutFile (Join-Path $dest $f)
+          }
+          Write-Host "Model spreman."
+
+      - name: Inno Setup
+        run: |
+          choco install innosetup --no-progress -y
+          echo "C:\Program Files (x86)\Inno Setup 6" >> $env:GITHUB_PATH
+
+      - name: Build + installer + manifest
+        env:
+          KORTIK_KWS_MODEL: ${{ github.workspace }}\models\sherpa-kws
+          LISTENER_UPDATE_PUBKEY: ${{ secrets.LISTENER_UPDATE_PUBKEY }}
+          LISTENER_UPDATE_SIGNING_KEY: ${{ secrets.LISTENER_UPDATE_SIGNING_KEY }}
+          KORTIK_LISTENER_VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          $v = "${{ steps.ver.outputs.version }}"
+          if (-not $env:LISTENER_UPDATE_PUBKEY) {
+            Write-Warning "LISTENER_UPDATE_PUBKEY nije postavljen — .exe nece verifikovati update."
+          } else {
+            Set-Content -Path "app\update_pubkey.txt" -Value $env:LISTENER_UPDATE_PUBKEY -Encoding ascii -NoNewline
+          }
+
+          python -m PyInstaller build\pyinstaller.spec --noconfirm --clean `
+            --distpath build\output --workpath build\work
+
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { $iscc = "C:\Program Files\Inno Setup 6\ISCC.exe" }
+          & $iscc "/DMyAppVersion=$v" "build\installer.iss"
+
+          $installer = "build\output\installer\KortikListener-$v-setup.exe"
+          if (-not (Test-Path $installer)) { throw "Installer nije napravljen" }
+
+          if ($env:LISTENER_UPDATE_SIGNING_KEY) {
+            $url = "https://github.com/${{ github.repository }}/releases/download/listener-v$v/KortikListener-$v-setup.exe"
+            python build\make_manifest.py --installer $installer --version $v --min-version $v `
+              --url $url --notes "Kortik Listener $v" --out listener_app_manifest.json
+          }
+
+      - name: Upload artefakata
+        uses: actions/upload-artifact@v4
+        with:
+          name: kortik-listener-${{ steps.ver.outputs.version }}
+          path: |
+            build/output/installer/*.exe
+            listener_app_manifest.json
+          if-no-files-found: warn
+
+      - name: GitHub Release
+        if: startsWith(github.ref, 'refs/tags/listener-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            build/output/installer/*.exe
+            listener_app_manifest.json
+          generate_release_notes: true
+          body: |
+            ## Kortik Listener ${{ steps.ver.outputs.version }}
+
+            Windows 10/11 x64 · per-user instalacija (bez admina)
+
+            1. Preuzmi `KortikListener-${{ steps.ver.outputs.version }}-setup.exe`
+            2. Instaliraj i pokreni
+            3. **Upari uređaj** → kod unesi na https://kortikbot.xyz/user/listener
+            4. Uđi u voice kanal → kaži **„Kortik pusti …“**
+
+            > Instalater nije Authenticode-potpisan u beta fazi, pa Windows može
+            > prikazati SmartScreen upozorenje (More info → Run anyway).

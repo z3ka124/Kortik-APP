@@ -1,0 +1,42 @@
+# ── Tajne / lokalno ─────────────────────────────────────────────────────────
+# Privatni Ed25519 kljuc za potpisivanje update manifesta — NIKAD u git
+build/secrets.local.ps1
+# Generisani javni kljuc (upisuje ga build/build.ps1)
+app/update_pubkey.txt
+.env
+.env.*
+!.env.example
+
+# ── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# ── Build artefakti (veliko!) ───────────────────────────────────────────────
+build/output/
+build/work/
+dist/
+*.spec.bak
+*.exe
+*.msi
+*.zip
+
+# ── Modeli (skidaju se/bundluju pri buildu) ─────────────────────────────────
+models/
+*.onnx
+*.bin
+*.gguf
+
+# ── Logovi / OS ─────────────────────────────────────────────────────────────
+*.log
+logs/
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

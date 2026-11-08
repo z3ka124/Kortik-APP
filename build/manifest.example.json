@@ -1,0 +1,13 @@
+{
+  "_comment": "Primer potpisanog manifesta. Generisi sa: python build/make_manifest.py --installer ... --version ... --url ...",
+  "version": "0.2.0",
+  "min_version": "0.1.0",
+  "channel": "stable",
+  "platform": "win-x64",
+  "url": "https://cdn.kortikbot.xyz/listener/KortikListener-0.2.0-setup.exe",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "size": 0,
+  "notes": "Primer — zameni stvarnim vrednostima.",
+  "published_at": "2026-11-08T00:00:00Z",
+  "sig": "0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+}

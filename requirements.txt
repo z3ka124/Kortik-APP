@@ -1,0 +1,26 @@
+# ============================================================================
+# Kortik Listener App — runtime zavisnosti
+# Python 3.11+ (razvijano i testirano na 3.13)
+# ============================================================================
+
+# UI
+PySide6>=6.6
+
+# Mreza
+aiohttp>=3.9
+
+# Kripto (Ed25519 verifikacija update manifesta)
+cryptography>=42.0
+
+# ─── Audio / wake word / STT (M3 faza) ──────────────────────────────────────
+numpy>=1.24
+sounddevice>=0.4.6
+webrtcvad-wheels>=2.0.14
+# Sherpa-ONNX KWS (model za "Kortik" je vec u Kortik-VoiceListener/models/sherpa-kws)
+sherpa-onnx>=1.10
+# Lokalni STT (hibrid: local po defaultu, cloud kao opcija)
+faster-whisper>=1.0
+
+# Tray ikonica (M3 faza)
+pystray>=0.19
+Pillow>=10.0
