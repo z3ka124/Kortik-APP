@@ -26,9 +26,12 @@ dist/
 *.msi
 *.zip
 
-# ── Modeli (skidaju se/bundluju pri buildu) ─────────────────────────────────
-models/
-*.onnx
+# ── Modeli ──────────────────────────────────────────────────────────────────
+# Wake word model JE u repou (5.3 MB, int8) da CI i klonovi rade bez download-a.
+models/*
+!models/sherpa-kws/
+!models/sherpa-kws/**
+*.onnx.bak
 *.bin
 *.gguf
 

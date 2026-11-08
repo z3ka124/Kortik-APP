@@ -86,6 +86,7 @@ MODEL_FILES = (
 )
 model_candidates = [
     os.environ.get("KORTIK_KWS_MODEL", ""),
+    os.path.join(PROJECT_ROOT, "models", "sherpa-kws"),
     os.path.join(PROJECT_ROOT, "..", "Kortik-VoiceListener", "models", "sherpa-kws"),
     os.path.join(os.environ.get("LOCALAPPDATA", ""), "Kortik", "Listener", "models", "sherpa-kws"),
 ]

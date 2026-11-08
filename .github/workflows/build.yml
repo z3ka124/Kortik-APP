@@ -48,20 +48,6 @@ jobs:
       - name: Testovi
         run: python -m unittest discover -s tests -p "test_*.py" -v
 
-      - name: Preuzmi wake word model
-        run: |
-          # Model nije u ovom repou (velik je) — skidamo ga sa Kortik repoa
-          $dest = "models/sherpa-kws"
-          New-Item -ItemType Directory -Force -Path $dest | Out-Null
-          $base = "https://raw.githubusercontent.com/z3ka124/Kortik-Bot_backup/main/Kortik-VoiceListener/models/sherpa-kws"
-          foreach ($f in @("tokens.txt","bpe.model",
-                           "encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
-                           "decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
-                           "joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx")) {
-            Invoke-WebRequest -Uri "$base/$f" -OutFile (Join-Path $dest $f)
-          }
-          Write-Host "Model spreman."
-
       - name: Inno Setup
         run: |
           choco install innosetup --no-progress -y
