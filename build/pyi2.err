@@ -1,0 +1,47 @@
+268 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.9
+269 INFO: Python: 3.13.14
+288 INFO: Platform: Windows-11-10.0.26300-SP0
+288 INFO: Python environment: C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0
+292 INFO: Removing temporary files and cleaning cache in C:\Users\sanin\AppData\Local\pyinstaller
+21618 INFO: Module search paths (PYTHONPATH):
+['C:\\Kortik\\Kortik-Listener-App',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python313.zip',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\DLLs',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0',
+ 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib\\site-packages',
+ 'C:\\Kortik\\Kortik-Listener-App']
+22675 INFO: Appending 'binaries' from .spec
+22677 INFO: Appending 'datas' from .spec
+22703 INFO: checking Analysis
+22703 INFO: Building Analysis because Analysis-00.toc is non existent
+22703 INFO: Looking for Python shared library...
+22703 INFO: Using Python shared library: C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\python313.dll
+22704 INFO: Running Analysis Analysis-00.toc
+22704 INFO: Target bytecode optimization level: 0
+22704 INFO: Initializing module dependency graph...
+22705 INFO: Initializing module graph hook caches...
+22750 INFO: Analyzing modules for base_library.zip ...
+23700 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+24304 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+24323 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+25827 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+27030 INFO: Caching module dependency graph...
+27069 INFO: Analyzing C:\Kortik\Kortik-Listener-App\app\main.py
+27239 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+27410 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+27666 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+27673 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+28040 INFO: Processing standard module hook 'hook-PySide6.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+28302 INFO: Processing standard module hook 'hook-shiboken6.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+28487 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+31383 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+35571 WARNING: QtLibraryInfo(PySide6): could not find translations with base name 'qtbase'! These translations will not be collected.
+35572 WARNING: QtLibraryInfo(PySide6): could not find translations with base name 'qt'! These translations will not be collected.
+Aborted by user request.

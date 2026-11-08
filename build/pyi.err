@@ -1,0 +1,173 @@
+233 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.9
+234 INFO: Python: 3.13.14
+254 INFO: Platform: Windows-11-10.0.26300-SP0
+255 INFO: Python environment: C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0
+258 INFO: Removing temporary files and cleaning cache in C:\Users\sanin\AppData\Local\pyinstaller
+OpenBLAS error: Memory allocation still failed after 10 retries, giving up.
+16270 INFO: Module search paths (PYTHONPATH):
+['C:\\Kortik\\Kortik-Listener-App',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\python313.zip',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\DLLs',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0',
+ 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages',
+ 'C:\\Program '
+ 'Files\\WindowsApps\\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\\Lib\\site-packages',
+ 'C:\\Kortik\\Kortik-Listener-App']
+17283 INFO: Appending 'binaries' from .spec
+17285 INFO: Appending 'datas' from .spec
+17308 INFO: checking Analysis
+17309 INFO: Building Analysis because Analysis-00.toc is non existent
+17309 INFO: Looking for Python shared library...
+17309 INFO: Using Python shared library: C:\Program Files\WindowsApps\PythonSoftwareFoundation.Python.3.13_3.13.3824.0_x64__qbz5n2kfra8p0\python313.dll
+17309 INFO: Running Analysis Analysis-00.toc
+17310 INFO: Target bytecode optimization level: 0
+17310 INFO: Initializing module dependency graph...
+17311 INFO: Initializing module graph hook caches...
+17337 INFO: Analyzing modules for base_library.zip ...
+18560 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+19178 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+20346 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+21177 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+21649 INFO: Caching module dependency graph...
+21692 INFO: Analyzing C:\Kortik\Kortik-Listener-App\app\main.py
+21848 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+22009 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+22308 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+22314 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+22687 INFO: Processing standard module hook 'hook-PySide6.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+22933 INFO: Processing standard module hook 'hook-shiboken6.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+23122 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+26498 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+30538 WARNING: QtLibraryInfo(PySide6): could not find translations with base name 'qtbase'! These translations will not be collected.
+30539 WARNING: QtLibraryInfo(PySide6): could not find translations with base name 'qt'! These translations will not be collected.
+31283 INFO: Processing standard module hook 'hook-PySide6.QtWidgets.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+36479 INFO: Processing standard module hook 'hook-PySide6.QtGui.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+78721 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+78797 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+78798 INFO: SetuptoolsInfo: initializing cached setuptools info...
+80127 INFO: Processing standard module hook 'hook-pydantic.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+80855 INFO: Processing standard module hook 'hook-rich.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+81568 INFO: Processing standard module hook 'hook-pygments.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+83742 INFO: Processing standard module hook 'hook-webbrowser.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+83997 INFO: Processing standard module hook 'hook-zoneinfo.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+84489 INFO: Processing standard module hook 'hook-certifi.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+84514 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+86602 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+86938 INFO: Processing standard module hook 'hook-dns.rdata.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+88592 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+88592 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+88598 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+88612 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+88642 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+88642 INFO: Setuptools: 'jaraco' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco'!
+88654 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+88654 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+88821 INFO: Processing standard module hook 'hook-_osx_support.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+88837 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+89036 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+89038 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+89604 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+89605 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+90229 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+90230 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+90929 INFO: Processing standard module hook 'hook-cryptography.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+92527 INFO: hook-cryptography: cryptography does not seem to be using dynamically linked OpenSSL.
+92616 INFO: Processing standard module hook 'hook-sounddevice.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+92670 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+95068 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+95526 INFO: Processing standard module hook 'hook-av.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+96918 INFO: Processing pre-safe-import-module hook 'hook-importlib_metadata.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+96919 INFO: Setuptools: 'importlib_metadata' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.importlib_metadata'!
+96949 INFO: Processing standard module hook 'hook-setuptools._vendor.importlib_metadata.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+96978 INFO: Processing pre-safe-import-module hook 'hook-zipp.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+96979 INFO: Setuptools: 'zipp' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.zipp'!
+97284 INFO: Processing standard module hook 'hook-urllib3.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+98911 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+100329 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+100428 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+100872 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+101056 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+102685 INFO: Processing standard module hook 'hook-fsspec.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+103565 INFO: Processing standard module hook 'hook-onnxruntime.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+103688 INFO: Processing pre-safe-import-module hook 'hook-tensorflow.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\pre_safe_import_module'
+103702 INFO: Analyzing hidden import 'app.main'
+103707 INFO: Analyzing hidden import 'sherpa_onnx.__main__'
+103711 INFO: Analyzing hidden import 'sherpa_onnx.cli'
+103715 INFO: Analyzing hidden import 'ctranslate2.converters'
+104045 INFO: Analyzing hidden import 'ctranslate2.converters.eole_ct2'
+104057 INFO: Analyzing hidden import 'aiohttp.pytest_plugin'
+104074 INFO: Processing standard module hook 'hook-pytest.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104401 INFO: Processing standard module hook 'hook-py.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+105766 INFO: Analyzing hidden import 'certifi.__main__'
+105768 INFO: Processing module hooks (post-graph stage)...
+107251 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+109827 INFO: Processing standard module hook 'hook-tzdata.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+110589 INFO: Performing binary vs. data reclassification (853 entries)
+110841 INFO: Looking for ctypes DLLs
+110997 INFO: Analyzing run-time hooks ...
+111007 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+111010 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+111013 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+111016 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+111018 INFO: Including run-time hook 'pyi_rth_cryptography_openssl.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+111019 INFO: Including run-time hook 'pyi_rth_pyside6.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\rthooks'
+111021 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+111024 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'C:\\Users\\sanin\\AppData\\Local\\Packages\\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\\LocalCache\\local-packages\\Python313\\site-packages\\PyInstaller\\hooks'
+111071 INFO: Creating base_library.zip...
+111094 INFO: Looking for dynamic libraries
+OpenBLAS error: Memory allocation still failed after 10 retries, giving up.
+OpTraceback (most recent call last):
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 287, in find_binary_dependencies
+    child.call(import_library, package)
+    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\isolated\_parent.py", line 322, in call
+    raise SubprocessDiedError(
+    ...<2 lines>...
+    ) from None
+PyInstaller.isolated._parent.SubprocessDiedError: Child process died calling import_library() with args=('numpy.typing',) and kwargs={}. Its exit code was 1.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<frozen runpy>", line 203, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\__main__.py", line 321, in <module>
+    run()
+    ~~~^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\__main__.py", line 215, in run
+    run_build(pyi_config, spec_file, **vars(args))
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\__main__.py", line 70, in run_build
+    PyInstaller.building.build_main.main(pyi_config, spec_file, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 1275, in main
+    build(specfile, distpath, workpath, clean_build)
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 1213, in build
+    exec(code, spec_namespace)
+    ~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "build\pyinstaller.spec", line 109, in <module>
+    a = Analysis(
+        [os.path.join(PROJECT_ROOT, "app", "main.py")],
+    ...<7 lines>...
+        noarchive=False,
+    )
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 584, in __init__
+    self.__postinit__()
+    ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\datastruct.py", line 184, in __postinit__
+    self.assemble()
+    ~~~~~~~~~~~~~^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 967, in assemble
+    find_binary_dependencies(self.binaries, collected_packages, self.graph._bindepend_symlink_suppression)
+    ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sanin\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.13_qbz5n2kfra8p0\LocalCache\local-packages\Python313\site-packages\PyInstaller\building\build_main.py", line 291, in find_binary_dependencies
+    raise isolated.SubprocessDiedError(
+    ...<2 lines>...
+    ) from e
+PyInstaller.isolated._parent.SubprocessDiedError: Isolated subprocess crashed while importing package 'numpy.typing'! Package import list: ['PySide6', 'importlib', 'importlib.metadata', 'urllib', 'logging', 'importlib.resources', 'zipfile', 'zipfile._path', 'email', 'json', '_pyi_rth_utils', '_distutils_hack', 'setuptools', 'setuptools._distutils', 'setuptools._vendor.jaraco.functools', 'setuptools._vendor.jaraco.text', 'setuptools._vendor.jaraco.context', 'setuptools._vendor.backports.tarfile', 'setuptools._vendor.backports', 'setuptools._vendor.backports.tarfile.compat', 'http', 'sysconfig', 'packaging', 'ctypes', 'setuptools._vendor.tomli', 'tomllib', 'setuptools.compat', 'setuptools._vendor.more_itertools', 'setuptools._distutils.command', 'concurrent.futures', 'multiprocessing.dummy', 'xmlrpc', 'xml.parsers', 'xml', 'xml.sax', 'multiprocessing', 'concurrent', 'setuptools._distutils.compat', '_pyrepl', 'curses', 'ctypes.macholib', 'html', 'pydoc_data', 'setuptools._vendor.wheel', 'setuptools.config._validate_pyproject', 'packaging.licenses', 'setuptools._vendor.packaging', 'setuptools.config', 'setuptools.command', '_sounddevice_data', 'certifi', 'async_timeout', 'multidict', 'attr', 'yarl', 'pydantic_core', 'pydantic.plugin', 'zoneinfo', 'tzdata', 'tzdata.zoneinfo.US', 'tzdata.zoneinfo.Pacific', 'tzdata.zoneinfo.Mexico', 'tzdata.zoneinfo.Indian', 'tzdata.zoneinfo.Europe', 'tzdata.zoneinfo.Etc', 'tzdata.zoneinfo.Chile', 'tzdata.zoneinfo.Canada', 'tzdata.zoneinfo.Brazil', 'tzdata.zoneinfo.Australia', 'tzdata.zoneinfo.Atlantic', 'tzdata.zoneinfo.Asia', 'tzdata.zoneinfo.Arctic', 'tzdata.zoneinfo.Antarctica', 'tzdata.zoneinfo.America.North_Dakota', 'tzdata.zoneinfo.America.Kentucky', 'tzdata.zoneinfo.America.Indiana', 'tzdata.zoneinfo.America.Argentina', 'tzdata.zoneinfo.America', 'tzdata.zoneinfo.Africa', 'tzdata.zoneinfo', 'typing_inspection', 'annotated_types', 'pydantic.v1', 'email_validator', 'dns', 'dns.rdtypes', 'dns.rdtypes.ANY', 'dns.rdtypes.IN', 'dns.rdtypes.CH', 'httpx', 'httpcore', 'httpcore._backends', 'anyio', 'anyio.streams', 'anyio.abc', 'anyio._core', '_pytest', 'pytest', 'unittest', 'xml.etree', 'pluggy', 'iniconfig', '_pytest._py', '_pytest._io', 'colorama', 'pygments.filters', 'pygments.formatters', 'pygments.styles', 'pygments', 'numpy.typing', 'numpy', 'numpy.strings', 'numpy._utils', 'numpy.core', 'numpy.char', 'numpy.rec', 'numpy.f2py', 'charset_normalizer', 'numpy.f2py._backends', 'numpy.testing', 'numpy.testing._private', 'numpy.ctypeslib', 'numpy.ma', 'numpy.polynomial', 'numpy.random', 'numpy.fft', 'numpy.linalg', 'numpy.matrixlib', 'numpy.lib', 'numpy._core', 'yaml', 'numpy._typing', 'PIL', '_pytest.mark', '_pytest.config', '_pytest.assertion', '_pytest._code', 'anyio._backends', 'sniffio', 'httpcore._sync', 'h2', 'hyperframe', 'hpack', 'h11', 'httpcore._async', 'rich._unicode_data', 'rich', 'markdown_it', 'markdown_it.rules_core', 'markdown_it.rules_inline', 'mdurl', 'markdown_it.common', 'markdown_it.rules_block', 'markdown_it.presets', 'markdown_it.helpers', 'pygments.lexers', 'click', 'httpx._transports', 'dns.quic', 'dotenv', 'pydantic.deprecated', 'pydantic._internal', 'pydantic', 'toml', 'pydantic.experimental', 'propcache', 'idna', 'frozenlist', 'aiosignal', 'aiohappyeyeballs', 'aiohttp._websocket', 'aiohttp', 'ctranslate2.specs', 'ctranslate2.models', 'huggingface_hub', 'huggingface_hub.utils', 'hf_xet', 'filelock', 'filelock._soft_rw', 'sqlite3', 'tqdm', 'setuptools._vendor.importlib_metadata', 'setuptools._vendor.zipp.compat', 'setuptools._vendor.zipp', 'setuptools._vendor.importlib_metadata.compat', 'httpx2', 'httpcore2', 'httpcore2._backends', 'httpcore2._sync', 'truststore', 'requests', 'cryptography', 'cryptography.hazmat.bindings', 'cryptography.hazmat', 'cryptography.hazmat.bindings.openssl', 'cryptography.hazmat.decrepit.ciphers', 'cryptography.hazmat.decrepit', 'cryptography.hazmat.primitives.ciphers', 'cryptography.hazmat.primitives.asymmetric', 'cryptography.hazmat.primitives', 'cryptography.hazmat.primitives.serialization', 'cryptography.hazmat.backends.openssl', 'cryptography.hazmat.backends', 'cryptography.x509', 'urllib3.contrib', 'urllib3', 'urllib3.contrib.emscripten', 'urllib3.http2', 'urllib3.util', 'httpcore2._async', 'httpx2._transports', 'httpx2.websockets', 'huggingface_hub.serialization', 'huggingface_hub.inference._mcp', 'huggingface_hub.inference', 'huggingface_hub.inference._providers', 'huggingface_hub.inference._generated.types', 'huggingface_hub.inference._generated', 'huggingface_hub._hot_reload', 'fsspec.implementations', 'fsspec', 'huggingface_hub.cli', 'starlette', 'starlette.middleware', 'annotated_doc', 'fastapi', 'fastapi.openapi', 'fastapi._compat', 'fastapi.dependencies', 'fastapi.security', 'fastapi.middleware', 'ctranslate2.converters', 'ctranslate2', 'sherpa_onnx', 'app', 'encodings', 'collections', 're', 'app.system', 'app.ui', 'app.stt', 'faster_whisper', 'onnxruntime', 'onnxruntime.transformers', 'onnxruntime.capi', 'tokenizers', 'tokenizers.implementations', 'tokenizers.trainers', 'tokenizers.processors', 'tokenizers.pre_tokenizers', 'tokenizers.normalizers', 'tokenizers.models', 'tokenizers.decoders', 'av', 'av.video', 'av.subtitles', 'av.sidedata', 'av.filter', 'av.codec', 'av.audio', 'av.container', 'app.kws', 'app.core', 'app.audio', 'app.updater', 'shiboken6', 'app.security', 'app.net', 'app.auth', 'pathlib', 'asyncio']

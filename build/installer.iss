@@ -21,6 +21,7 @@ DefaultDirName={localappdata}\Kortik\Listener\app
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 PrivilegesRequired=lowest
+SetupIconFile=..\assets\icon.ico
 OutputDir=..\build\output\installer
 OutputBaseFilename=KortikListener-{#MyAppVersion}-setup
 Compression=lzma2
@@ -39,7 +40,7 @@ Name: "serbian"; MessagesFile: "compiler:Languages\SerbianCyrillic.isl"
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"
 Name: "autostart"; Description: "Pokreni Kortik Listener sa Windows-om"; GroupDescription: "Startup"; Flags: unchecked
 
 [Files]

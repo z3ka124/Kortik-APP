@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPlainTextEdit,
     QPushButton,
+    QProgressBar,
     QSlider,
     QStackedWidget,
     QVBoxLayout,
@@ -392,10 +393,17 @@ class MainWindow(QMainWindow):
             status_layout.addWidget(widget)
         layout.addWidget(status_box)
 
+        listen_row = QHBoxLayout()
         self.listen_check = QCheckBox("Slušam wake word „Kortik“")
-        self.listen_check.setChecked(True)
+        self.listen_check.setChecked(False)
         self.listen_check.stateChanged.connect(self._on_listen_toggle)
-        layout.addWidget(self.listen_check)
+        self.listen_btn = QPushButton("Uključi slušanje")
+        self.listen_btn.setObjectName("ghost")
+        self.listen_btn.clicked.connect(self._toggle_listen_button)
+        listen_row.addWidget(self.listen_check)
+        listen_row.addWidget(self.listen_btn)
+        listen_row.addStretch(1)
+        layout.addLayout(listen_row)
 
         cmd_box = QGroupBox("Test komanda")
         cmd_layout = QVBoxLayout(cmd_box)
@@ -415,9 +423,29 @@ class MainWindow(QMainWindow):
 
         settings_box = QGroupBox("Podešavanja")
         form = QFormLayout(settings_box)
-        self.mic_edit = QLineEdit(self.settings.mic_device)
-        self.mic_edit.setPlaceholderText("prazno = sistemski mikrofon")
-        form.addRow("Mikrofon", self.mic_edit)
+        mic_row = QHBoxLayout()
+        self.mic_combo = QComboBox()
+        mic_row.addWidget(self.mic_combo, 1)
+        mic_refresh = QPushButton("↻")
+        mic_refresh.setObjectName("ghost")
+        mic_refresh.setFixedWidth(38)
+        mic_refresh.setToolTip("Osveži listu mikrofona")
+        mic_refresh.clicked.connect(self._reload_mics)
+        mic_row.addWidget(mic_refresh)
+        form.addRow("Mikrofon", mic_row)
+
+        self.mic_test_btn = QPushButton("Test mikrofona (4 s)")
+        self.mic_test_btn.setObjectName("ghost")
+        self.mic_test_btn.clicked.connect(self._test_mic)
+        self.mic_level = QProgressBar()
+        self.mic_level.setRange(0, 100)
+        self.mic_level.setValue(0)
+        self.mic_level.setTextVisible(False)
+        self.mic_level.setFixedHeight(8)
+        mic_test_row = QHBoxLayout()
+        mic_test_row.addWidget(self.mic_test_btn)
+        mic_test_row.addWidget(self.mic_level, 1)
+        form.addRow("", mic_test_row)
         self.stt_combo = QComboBox()
         self.stt_combo.addItems(["local", "cloud"])
         self.stt_combo.setCurrentText(self.settings.stt_mode)
@@ -474,6 +502,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(footer)
 
         self.dashboard_page = page
+        self._reload_mics()
         return page
 
     # ── Slots ───────────────────────────────────────────────────────────────
@@ -510,12 +539,16 @@ class MainWindow(QMainWindow):
                 "ok" if plugin else "warn",
             )
 
-        if self.settings.listen_only_in_voice:
-            self.listen_check.setEnabled(in_voice)
-            if not in_voice:
-                self.listen_check.setChecked(False)
-            elif not self.listen_check.isChecked():
-                self.listen_check.setChecked(True)
+        # Ne diramo korisnikovu odluku — samo prikazujemo stanje i razlog
+        if self.listener_service is not None:
+            self._set_status(self.voice_label, f"🎙️ Slušam — čekam „{self.settings.wake_word}“", "ok")
+            self.listen_btn.setText("Zaustavi slušanje")
+        elif self.settings.listen_only_in_voice and not in_voice:
+            self._set_status(self.voice_label, "⏸️ Slušanje isključeno · nisi u voice kanalu", "warn")
+            self.listen_btn.setText("Uključi slušanje")
+        else:
+            self._set_status(self.voice_label, "⏸️ Slušanje je isključeno", "warn")
+            self.listen_btn.setText("Uključi slušanje")
 
         user_id = data.get("user_id")
         if user_id:
@@ -639,11 +672,113 @@ class MainWindow(QMainWindow):
 
         QApplication.quit()
 
+    def _toggle_listen_button(self) -> None:
+        self.listen_check.setChecked(not self.listen_check.isChecked())
+
     def _on_listen_toggle(self, _state: int) -> None:
-        if self.listen_check.isChecked():
-            self._start_listening()
-        else:
+        if not self.listen_check.isChecked():
             self._stop_listening()
+            return
+
+        in_voice = bool((self.last_heartbeat or {}).get("in_voice"))
+        if not in_voice and self.settings.listen_only_in_voice:
+            answer = QMessageBox.question(
+                self,
+                "Nisi u voice kanalu",
+                "Trenutno nisi u voice kanalu, a uključeno je „slušaj samo u VC“.\n\n"
+                "Da slušam i van voice kanala?",
+                QMessageBox.Yes | QMessageBox.No,
+                QMessageBox.Yes,
+            )
+            if answer != QMessageBox.Yes:
+                self.listen_check.blockSignals(True)
+                self.listen_check.setChecked(False)
+                self.listen_check.blockSignals(False)
+                self._set_status(self.voice_label, "⏸️ Slušanje isključeno", "warn")
+                return
+            self.settings.listen_only_in_voice = False
+            if hasattr(self, "only_vc_check"):
+                self.only_vc_check.setChecked(False)
+            save_settings(self.paths, self.settings)
+
+        self._start_listening()
+
+    # ── Mikrofon (izbor + test) ─────────────────────────────────────────────
+    def _reload_mics(self) -> None:
+        from app.audio.capture import list_input_devices
+
+        current = self.settings.mic_device or ""
+        self.mic_combo.blockSignals(True)
+        self.mic_combo.clear()
+        self.mic_combo.addItem("Sistemski (podrazumevano)", "")
+        for device in list_input_devices():
+            self.mic_combo.addItem(f"{device['index']} — {device['name']}", device["name"])
+
+        index = 0
+        for i in range(self.mic_combo.count()):
+            if self.mic_combo.itemData(i) == current:
+                index = i
+                break
+        self.mic_combo.setCurrentIndex(index)
+        self.mic_combo.blockSignals(False)
+
+        if hasattr(self, "mic_test_btn"):
+            self.mic_test_btn.setEnabled(self.mic_combo.count() > 1)
+
+    def _test_mic(self) -> None:
+        from PySide6.QtCore import QTimer
+
+        from app.audio.capture import MicrophoneCapture
+        from app.audio.vad import rms
+
+        if getattr(self, "_mic_test_capture", None) is not None:
+            return
+
+        capture = MicrophoneCapture(device=self.mic_combo.currentData() or None)
+        try:
+            capture.start()
+        except Exception as exc:
+            QMessageBox.warning(self, "Mikrofon", f"Ne mogu da otvorim mikrofon:\n{exc}")
+            return
+
+        self._mic_test_capture = capture
+        self._mic_test_peak = 0
+        self._mic_test_ticks = 0
+        self.mic_test_btn.setEnabled(False)
+        self.mic_test_btn.setText("Slušam… pričaj")
+
+        def tick() -> None:
+            chunk = capture.read(0.05)
+            if chunk:
+                level = rms(chunk)
+                self._mic_test_peak = max(self._mic_test_peak, int(level))
+                self.mic_level.setValue(min(100, int(level / 60)))
+            self._mic_test_ticks += 1
+            if self._mic_test_ticks < 40:  # ~4 s
+                return
+
+            self._mic_test_timer.stop()
+            try:
+                capture.stop()
+            except Exception:
+                pass
+            self._mic_test_capture = None
+            self.mic_test_btn.setEnabled(True)
+            self.mic_test_btn.setText("Test mikrofona (4 s)")
+            self.mic_level.setValue(0)
+
+            peak = self._mic_test_peak
+            if peak > 250:
+                verdict = "Dobar signal ✔"
+            elif peak > 60:
+                verdict = "Tiho — pojačaj mikrofon ili priđi bliže."
+            else:
+                verdict = "Nema signala — verovatno pogrešan uređaj."
+            QMessageBox.information(self, "Test mikrofona", f"Peak RMS: {peak}\n{verdict}")
+
+        self._mic_test_timer = QTimer(self)
+        self._mic_test_timer.timeout.connect(tick)
+        self._mic_test_timer.start(100)
 
     def _start_listening(self) -> None:
         if self.listener_service is not None:
@@ -688,9 +823,13 @@ class MainWindow(QMainWindow):
 
             recorder = UtteranceRecorder(VadConfig())
             core = ListenerCore(kws, recorder, stt)
-            capture = MicrophoneCapture(device=self.settings.mic_device or None)
+            capture = MicrophoneCapture(device=self.mic_combo.currentData() or None)
             self.listener_service = ListenerService(core, capture, on_action=self._handle_listener_action)
             self.runner.submit(self.listener_service.start())
+            self.listen_check.blockSignals(True)
+            self.listen_check.setChecked(True)
+            self.listen_check.blockSignals(False)
+            self.listen_btn.setText("Zaustavi slušanje")
             self._set_status(
                 self.voice_label,
                 f"Slušanje: tražim „{self.settings.wake_word}“ (STT={self.settings.stt_mode})",
@@ -716,7 +855,12 @@ class MainWindow(QMainWindow):
             except Exception:
                 pass
             self.logger.info("Listening zaustavljen.")
-        self._set_status(self.voice_label, "Slušanje: isključeno", "warn")
+        self.listen_check.blockSignals(True)
+        self.listen_check.setChecked(False)
+        self.listen_check.blockSignals(False)
+        if hasattr(self, "listen_btn"):
+            self.listen_btn.setText("Uključi slušanje")
+        self._set_status(self.voice_label, "⏸️ Slušanje je isključeno", "warn")
         self.runner.submit(self._heartbeat_once())
 
     async def _handle_listener_action(self, action: Any) -> None:
@@ -764,7 +908,7 @@ class MainWindow(QMainWindow):
     def _save_settings_ui(self) -> None:
         save_settings(self.paths, self.settings)
         self.settings.device_name = self.device_name_edit.text().strip() or self.settings.device_name
-        self.settings.mic_device = self.mic_edit.text().strip()
+        self.settings.mic_device = self.mic_combo.currentData() or ""
         self.settings.stt_mode = self.stt_combo.currentText()
         self.settings.language = self.lang_combo.currentText()
         self.settings.sensitivity = self.sens_slider.value() / 100.0
