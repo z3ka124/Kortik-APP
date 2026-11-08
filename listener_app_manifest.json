@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "min_version": "1.0.0",
+  "channel": "stable",
+  "platform": "win-x64",
+  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.0.0/KortikListener-1.0.0-setup.exe",
+  "sha256": "de3004016214a4877a08860089c7a278f09290b90ffce612121ef3c1c2a75cf2",
+  "size": 109970109,
+  "notes": "Prva verzija Kortik Listener",
+  "published_at": "2026-11-08T16:02:53Z",
+  "sig": "9809c1c19aff8817c7cb72879a178628a9133936503b50aa4a58258b17b178f7d1d0a46c7767bde5f20bea19831eab3b274b3039726723715e7e969b6978b80f"
+}
