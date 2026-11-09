@@ -39,7 +39,7 @@ class LocalWhisper:
         compute_type: str = "int8",
         beam_size: int = 1,
         download_root: Optional[Path] = None,
-        ncpu: int = 1,
+        ncpu: int = 4,
     ):
         self.model_size = model_size if model_size in SUPPORTED_SIZES else DEFAULT_MODEL_SIZE
         self.language = language or "sr"

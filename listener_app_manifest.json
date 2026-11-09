@@ -1,12 +1,12 @@
 {
-  "version": "1.1.3",
+  "version": "1.1.4",
   "min_version": "1.0.0",
   "channel": "stable",
   "platform": "win-x64",
-  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.1.3/KortikListener-1.1.3-setup.exe",
-  "sha256": "dc8baa2f1517238a46592d4839a9f644e2389ce102f525b550d08bd90b6fa54f",
-  "size": 129091004,
-  "notes": "1.1.3: VAD komandi vracen na v1.1.1 (brz odziv), cloud STT (Groq), autoplay on/off, glasovne komande = slash",
-  "published_at": "2026-11-09T21:49:41Z",
-  "sig": "67d52637dabcca83923e25e752aa2d6398f2f35a93312624cd0cfa942cac1e011989f5262aa9a4f9aa4972de6478d34c3c491f82d076e73212eafa0ab57b9a02"
+  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.1.4/KortikListener-1.1.4-setup.exe",
+  "sha256": "70637e7a5578373637ae7fe41bee9251af9bb12079d724ed385ce5ad26e257fa",
+  "size": 129096727,
+  "notes": "1.1.4: brzi STT (4 CPU threada), VAD 400ms tisine",
+  "published_at": "2026-11-09T23:40:43Z",
+  "sig": "af54abc4378a6fc58f254988b6c92f15f2d955d6230f22f72e5cd732052b145e3c06469518bee9d83f7d238f7784b9903ffa2a2e4eaf8766b73cae7972e1a80b"
 }

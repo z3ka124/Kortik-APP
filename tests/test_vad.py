@@ -28,8 +28,8 @@ SPEECH = chunk(3000)
 
 
 class ConfigDefaultsTests(unittest.TestCase):
-    def test_silence_ms_is_one_second(self):
-        self.assertEqual(VadConfig().silence_ms, 700)
+    def test_silence_ms_default(self):
+        self.assertEqual(VadConfig().silence_ms, 400)
 
     def test_max_utterance_allows_long_titles(self):
         self.assertEqual(VadConfig().max_utterance_ms, 6000)

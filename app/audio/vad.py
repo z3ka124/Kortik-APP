@@ -43,7 +43,7 @@ def is_silence(pcm: bytes) -> bool:
 @dataclass
 class VadConfig:
     speech_rms: float = 350.0        # apsolutni prag (tisina u sobi je ~20-80)
-    silence_ms: int = 700           # koliko tišine = kraj rečenice
+    silence_ms: int = 400           # koliko tišine = kraj rečenice (niže = brži odziv)
     min_speech_ms: int = 250         # kraće od ovoga = šum, odbacuje se
     pre_roll_ms: int = 300           # hvata početak reči pre detekcije
     max_utterance_ms: int = 6000     # hard cap da ne snimamo zauvek
