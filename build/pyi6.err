@@ -1,0 +1,129 @@
+255 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.9
+256 INFO: Python: 3.13.17
+283 INFO: Platform: Windows-11-10.0.26300-SP0
+284 INFO: Python environment: C:\Kortik\Kortik-Listener-App\.venv-org
+287 INFO: Removing temporary files and cleaning cache in C:\Users\sanin\AppData\Local\pyinstaller
+4329 WARNING: collect_data_files - skipping data collection for module 'certifi' as it is not a package.
+4329 WARNING: collect_dynamic_libs - skipping library collection for module 'certifi' as it is not a package.
+5622 INFO: Module search paths (PYTHONPATH):
+['C:\\Kortik\\Kortik-Listener-App',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\python313.zip',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\DLLs',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\Lib',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313',
+ 'C:\\Kortik\\Kortik-Listener-App\\.venv-org',
+ 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages',
+ 'C:\\Kortik\\Kortik-Listener-App']
+6104 INFO: Appending 'binaries' from .spec
+6105 INFO: Appending 'datas' from .spec
+6119 INFO: checking Analysis
+6120 INFO: Building Analysis because Analysis-00.toc is non existent
+6120 INFO: Looking for Python shared library...
+6120 INFO: Using Python shared library: C:\Users\sanin\AppData\Local\Programs\Python\Python313\python313.dll
+6120 INFO: Running Analysis Analysis-00.toc
+6120 INFO: Target bytecode optimization level: 0
+6120 INFO: Initializing module dependency graph...
+6122 INFO: Initializing module graph hook caches...
+6144 INFO: Analyzing modules for base_library.zip ...
+7294 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+7306 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+7552 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+9054 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+10448 INFO: Caching module dependency graph...
+10481 INFO: Analyzing C:\Kortik\Kortik-Listener-App\app\main.py
+10626 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+10796 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+11047 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+11052 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+11407 INFO: Processing standard module hook 'hook-PySide6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+11640 INFO: Processing standard module hook 'hook-shiboken6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+11810 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+14629 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+18897 INFO: Processing standard module hook 'hook-PySide6.QtWidgets.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+23316 INFO: Processing standard module hook 'hook-PySide6.QtGui.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+62555 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+63080 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+63083 INFO: SetuptoolsInfo: initializing cached setuptools info...
+64372 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64373 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+64379 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+64393 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64431 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64432 INFO: Setuptools: 'jaraco' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco'!
+64442 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64443 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+64566 INFO: Processing standard module hook 'hook-_osx_support.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+64581 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+64823 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+64825 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+65339 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+65340 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+65900 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+65901 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+66625 INFO: Processing standard module hook 'hook-cryptography.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+68095 INFO: hook-cryptography: cryptography does not seem to be using dynamically linked OpenSSL.
+68184 INFO: Processing standard module hook 'hook-sounddevice.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+68235 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+68990 INFO: Processing standard module hook 'hook-webbrowser.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+69957 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+70835 INFO: Processing standard module hook 'hook-av.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+71529 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+71630 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+72075 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+72260 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+73009 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+74801 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+76635 INFO: Processing standard module hook 'hook-fsspec.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+77494 INFO: Processing standard module hook 'hook-onnxruntime.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+77597 INFO: Processing pre-safe-import-module hook 'hook-tensorflow.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\pre_safe_import_module'
+77610 INFO: Analyzing hidden import 'app.main'
+77614 INFO: Analyzing hidden import 'sherpa_onnx.__main__'
+77619 INFO: Analyzing hidden import 'sherpa_onnx.cli'
+77622 INFO: Analyzing hidden import 'faster_whisper.assets'
+77623 INFO: Analyzing hidden import 'ctranslate2.converters'
+77939 INFO: Analyzing hidden import 'ctranslate2.converters.eole_ct2'
+77950 INFO: Analyzing hidden import 'aiohttp.pytest_plugin'
+78079 INFO: Processing module hooks (post-graph stage)...
+79155 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+79519 INFO: Performing binary vs. data reclassification (341 entries)
+79650 INFO: Looking for ctypes DLLs
+79777 INFO: Analyzing run-time hooks ...
+79785 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+79788 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+79791 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+79794 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+79796 INFO: Including run-time hook 'pyi_rth_pyside6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+79798 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+79801 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+79805 INFO: Including run-time hook 'pyi_rth_cryptography_openssl.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+79830 INFO: Creating base_library.zip...
+79851 INFO: Looking for dynamic libraries
+82144 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\shiboken6', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\numpy.libs', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\ctranslate2', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\av.libs']
+82145 INFO: Extra DLL search directories (PATH): ['C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PySide6']
+84644 INFO: Warnings written to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\warn-pyinstaller.txt
+84741 INFO: Graph cross-reference written to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\xref-pyinstaller.html
+84787 INFO: checking PYZ
+84787 INFO: Building PYZ because PYZ-00.toc is non existent
+84787 INFO: Building PYZ (ZlibArchive) C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\PYZ-00.pyz
+85687 INFO: Building PYZ (ZlibArchive) C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\PYZ-00.pyz completed successfully.
+85721 INFO: checking PKG
+85721 INFO: Building PKG because PKG-00.toc is non existent
+85721 INFO: Building PKG (CArchive) KortikListener.pkg
+85767 INFO: Building PKG (CArchive) KortikListener.pkg completed successfully.
+85769 INFO: Bootloader C:\Kortik\Kortik-Listener-App\.venv-org\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+85770 INFO: checking EXE
+85770 INFO: Building EXE because EXE-00.toc is non existent
+85770 INFO: Building EXE from EXE-00.toc
+85771 INFO: Copying bootloader EXE to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\KortikListener.exe
+85847 INFO: Copying icon to EXE
+85886 INFO: Copying 0 resources to EXE
+85886 INFO: Embedding manifest in EXE
+85922 INFO: Appending PKG archive to EXE
+86065 INFO: Fixing EXE headers
+86357 INFO: Building EXE from EXE-00.toc completed successfully.
+86362 INFO: checking COLLECT
+86363 INFO: Building COLLECT because COLLECT-00.toc is non existent
+86363 INFO: Removing dir C:\Kortik\Kortik-Listener-App\build\output\KortikListener
+86543 INFO: Building COLLECT COLLECT-00.toc
+87877 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+87887 INFO: Build complete! The results are available in: C:\Kortik\Kortik-Listener-App\build\output

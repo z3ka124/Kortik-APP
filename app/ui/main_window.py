@@ -18,7 +18,6 @@ from PySide6.QtWidgets import (
     QLineEdit,
     QMainWindow,
     QMessageBox,
-    QPlainTextEdit,
     QPushButton,
     QProgressBar,
     QSlider,
@@ -30,7 +29,6 @@ from PySide6.QtWidgets import (
 from app.auth.device_flow import DeviceFlow
 from app.config import AppPaths, Settings, save_settings
 from app.core.parser import parse_command
-from app.logs import tail_log
 from app.net.api import ApiError, ListenerApi
 from app.security.storage import SecretStore
 from app.ui.async_runner import AsyncRunner
@@ -50,7 +48,7 @@ QPushButton { background: #6d28d9; border: none; border-radius: 8px; padding: 9p
 QPushButton:hover { background: #7c3aed; }
 QPushButton:disabled { background: #2a3040; color: #6b7280; }
 QPushButton#ghost { background: #1b1f2a; border: 1px solid #2a3040; }
-QLineEdit, QComboBox, QPlainTextEdit { background: #151922; border: 1px solid #2a3040; border-radius: 8px; padding: 7px; }
+QLineEdit, QComboBox { background: #151922; border: 1px solid #2a3040; border-radius: 8px; padding: 7px; }
 QGroupBox { border: 1px solid #2a3040; border-radius: 10px; margin-top: 12px; padding: 12px; }
 QGroupBox::title { subcontrol-origin: margin; left: 12px; color: #9aa3b2; }
 """
@@ -67,6 +65,7 @@ class UiSignals(QObject):
     update_info = Signal(object)
     update_ready = Signal(object)
     listener_event = Signal(object)
+    listen_level = Signal(int)
 
 
 class MainWindow(QMainWindow):
@@ -127,6 +126,7 @@ class MainWindow(QMainWindow):
         self.signals.update_info.connect(self._on_update_info)
         self.signals.update_ready.connect(self._on_update_ready)
         self.signals.listener_event.connect(self._on_listener_event)
+        self.signals.listen_level.connect(self._on_listen_level)
 
     @staticmethod
     def _set_status(label: QLabel, text: str, kind: str = "") -> None:
@@ -355,6 +355,10 @@ class MainWindow(QMainWindow):
         self.user_label.setText(f"Discord ID: {user_id}" if user_id else "Ulogovan")
         self.runner.submit(self._heartbeat_once())
 
+        # Vrati prethodno stanje slusanja (bez modalnih dijaloga — ne blokira start).
+        if getattr(self.settings, "listening", False):
+            self._start_listening()
+
     def _on_session_error(self, message: str) -> None:
         if self.stack.currentWidget() is self.dashboard_page:
             self.heartbeat_timer.stop()
@@ -394,7 +398,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(status_box)
 
         listen_row = QHBoxLayout()
-        self.listen_check = QCheckBox("Slušam wake word „Kortik“")
+        self.listen_check = QCheckBox("Slušam wake word „Hey Jarvis“")
         self.listen_check.setChecked(False)
         self.listen_check.stateChanged.connect(self._on_listen_toggle)
         self.listen_btn = QPushButton("Uključi slušanje")
@@ -402,6 +406,14 @@ class MainWindow(QMainWindow):
         self.listen_btn.clicked.connect(self._toggle_listen_button)
         listen_row.addWidget(self.listen_check)
         listen_row.addWidget(self.listen_btn)
+        self.listen_level = QProgressBar()
+        self.listen_level.setRange(0, 100)
+        self.listen_level.setValue(0)
+        self.listen_level.setTextVisible(False)
+        self.listen_level.setFixedHeight(8)
+        self.listen_level.setFixedWidth(120)
+        self.listen_level.setToolTip("Nivo mikrofona dok slušam")
+        listen_row.addWidget(self.listen_level)
         listen_row.addStretch(1)
         layout.addLayout(listen_row)
 
@@ -432,6 +444,12 @@ class MainWindow(QMainWindow):
         mic_refresh.setToolTip("Osveži listu mikrofona")
         mic_refresh.clicked.connect(self._reload_mics)
         mic_row.addWidget(mic_refresh)
+        mic_scan = QPushButton("🔍")
+        mic_scan.setObjectName("ghost")
+        mic_scan.setFixedWidth(38)
+        mic_scan.setToolTip("Skeniraj sve mikrofone i pokaži gde ima signala")
+        mic_scan.clicked.connect(self._scan_mics)
+        mic_row.addWidget(mic_scan)
         form.addRow("Mikrofon", mic_row)
 
         self.mic_test_btn = QPushButton("Test mikrofona (4 s)")
@@ -449,7 +467,32 @@ class MainWindow(QMainWindow):
         self.stt_combo = QComboBox()
         self.stt_combo.addItems(["local", "cloud"])
         self.stt_combo.setCurrentText(self.settings.stt_mode)
+        self.stt_combo.currentTextChanged.connect(self._on_stt_mode_changed)
         form.addRow("STT režim", self.stt_combo)
+        self.model_size_combo = QComboBox()
+        self.model_size_combo.addItems(["small", "base", "tiny"])
+        self.model_size_combo.setCurrentText(getattr(self.settings, "stt_model_size", "small"))
+        self.model_size_combo.setToolTip(
+            "small = najbolje za srpski (~244 MB RAM)\n"
+            "base = kompromis (~74 MB)\n"
+            "tiny = najmanje RAM-a (~39 MB), slabija tačnost"
+        )
+        self.model_size_label = QLabel("STT model size (lokalno)")
+        form.addRow(self.model_size_label, self.model_size_combo)
+        self.cloud_model_combo = QComboBox()
+        self.cloud_model_combo.addItem("Large Turbo (brži)", "whisper-large-v3-turbo")
+        self.cloud_model_combo.addItem("Large (najtačniji)", "whisper-large-v3")
+        current_cloud = getattr(self.settings, "stt_cloud_model", "whisper-large-v3-turbo")
+        cloud_idx = self.cloud_model_combo.findData(current_cloud)
+        if cloud_idx >= 0:
+            self.cloud_model_combo.setCurrentIndex(cloud_idx)
+        self.cloud_model_combo.setToolTip(
+            "Groq Whisper model za cloud STT (mnogo tačniji od lokalnog).\n"
+            "Large Turbo = brži, skoro isto tačan.\n"
+            "Large = najtačniji, malo sporiji."
+        )
+        self.cloud_model_label = QLabel("Cloud model")
+        form.addRow(self.cloud_model_label, self.cloud_model_combo)
         self.lang_combo = QComboBox()
         self.lang_combo.addItems(["sr", "en", "auto"])
         self.lang_combo.setCurrentText(self.settings.language)
@@ -477,18 +520,6 @@ class MainWindow(QMainWindow):
         self.update_label.setWordWrap(True)
         layout.addWidget(self.update_label)
 
-        log_box = QGroupBox("Log")
-        log_layout = QVBoxLayout(log_box)
-        self.log_view = QPlainTextEdit()
-        self.log_view.setReadOnly(True)
-        self.log_view.setMaximumBlockCount(500)
-        log_layout.addWidget(self.log_view)
-        refresh_btn = QPushButton("Osveži log")
-        refresh_btn.setObjectName("ghost")
-        refresh_btn.clicked.connect(self._refresh_log)
-        log_layout.addWidget(refresh_btn)
-        layout.addWidget(log_box, 1)
-
         footer = QHBoxLayout()
         dash_btn = QPushButton("Otvori dashboard")
         dash_btn.setObjectName("ghost")
@@ -502,8 +533,19 @@ class MainWindow(QMainWindow):
         layout.addLayout(footer)
 
         self.dashboard_page = page
+        self._on_stt_mode_changed(self.stt_combo.currentText())
         self._reload_mics()
         return page
+
+    def _on_stt_mode_changed(self, mode: str) -> None:
+        """Prikazi odgovarajuci dropdown (local -> model size, cloud -> Groq model)."""
+        cloud = (mode or "").strip().lower() == "cloud"
+        for widget in (getattr(self, "model_size_combo", None), getattr(self, "model_size_label", None)):
+            if widget is not None:
+                widget.setVisible(not cloud)
+        for widget in (getattr(self, "cloud_model_combo", None), getattr(self, "cloud_model_label", None)):
+            if widget is not None:
+                widget.setVisible(cloud)
 
     # ── Slots ───────────────────────────────────────────────────────────────
     def _on_heartbeat(self, data: dict) -> None:
@@ -541,7 +583,7 @@ class MainWindow(QMainWindow):
 
         # Ne diramo korisnikovu odluku — samo prikazujemo stanje i razlog
         if self.listener_service is not None:
-            self._set_status(self.voice_label, f"🎙️ Slušam — čekam „{self.settings.wake_word}“", "ok")
+            self._set_status(self.voice_label, "🎙️ Slušam — čekam „Hey Jarvis“", "ok")
             self.listen_btn.setText("Zaustavi slušanje")
         elif self.settings.listen_only_in_voice and not in_voice:
             self._set_status(self.voice_label, "⏸️ Slušanje isključeno · nisi u voice kanalu", "warn")
@@ -574,8 +616,6 @@ class MainWindow(QMainWindow):
             self._set_status(self.command_status, "⚠️ " + (message or status), "warn")
         else:
             self._set_status(self.command_status, "❌ " + (message or status), "err")
-
-        self._refresh_log()
 
     def _on_update_info(self, manifest: dict) -> None:
         if not isinstance(manifest, dict):
@@ -634,26 +674,37 @@ class MainWindow(QMainWindow):
         path = payload.get("path") or ""
         version = manifest.get("version")
 
-        if not payload.get("signed"):
-            self._set_status(
-                self.update_label,
-                f"Preuzeta verzija {version} nema važeći potpis "
-                f"({payload.get('signature_status')}) — neću je instalirati.",
-                "err",
+        signed = bool(payload.get("signed"))
+        if not signed:
+            if getattr(self.settings, "require_authenticode", False):
+                self._set_status(
+                    self.update_label,
+                    f"Verzija {version} nije Authenticode-potpisana "
+                    f"({payload.get('signature_status')}) — blokirano podešavanjem.",
+                    "err",
+                )
+                self.logger.error("Update odbijen: Authenticode status=%s", payload.get("signature_status"))
+                return
+            # Beta: manifest je vec Ed25519-verifikovan (sha256 unutra) -> dozvoljavamo
+            self.logger.warning(
+                "Update nije Authenticode-potpisan (%s); manifest je Ed25519-verifikovan -> nastavljam.",
+                payload.get("signature_status"),
             )
-            self.logger.error("Update odbijen: Authenticode status=%s", payload.get("signature_status"))
-            return
 
         self._set_status(
             self.update_label,
-            f"Verzija {version} je preuzeta i potpisana — spremna za instalaciju.",
+            f"Verzija {version} je preuzeta i verifikovana — spremna za instalaciju.",
             "ok",
         )
 
         answer = QMessageBox.question(
             self,
             "Ažuriranje spremno",
-            f"Verzija {version} je preuzeta i verifikovana.\n\nInstalirati sada? Aplikacija će se zatvoriti.",
+            (
+                f"Verzija {version} je preuzeta i verifikovana"
+                f"{' (potpisana)' if signed else ' (Ed25519 manifest, bez Authenticode potpisa)'}.\n\n"
+                "Instalirati sada? Aplikacija će se zatvoriti."
+            ),
             QMessageBox.Yes | QMessageBox.No,
             QMessageBox.Yes,
         )
@@ -681,6 +732,24 @@ class MainWindow(QMainWindow):
             return
 
         in_voice = bool((self.last_heartbeat or {}).get("in_voice"))
+
+        # Ako mikrofon nije izabran — skeniraj i auto-izaberi onaj koji daje signal
+        if not (self.mic_combo.currentData() or ""):
+            if self._scan_mics(autoselect=True) < 50:
+                QMessageBox.warning(
+                    self,
+                    "Mikrofon ne daje signal",
+                    "Nijedan mikrofon nije dao signal tokom skeniranja.\n\n"
+                    "1) Proveri Windows → Settings → Privacy → Microphone → "
+                    "„Allow desktop apps“\n"
+                    "2) Proveri da mikrofon nije mute u Windowsu\n"
+                    "3) Ponovi skeniranje i pričaj tokom njega",
+                )
+                self.listen_check.blockSignals(True)
+                self.listen_check.setChecked(False)
+                self.listen_check.blockSignals(False)
+                return
+
         if not in_voice and self.settings.listen_only_in_voice:
             answer = QMessageBox.question(
                 self,
@@ -712,7 +781,8 @@ class MainWindow(QMainWindow):
         self.mic_combo.clear()
         self.mic_combo.addItem("Sistemski (podrazumevano)", "")
         for device in list_input_devices():
-            self.mic_combo.addItem(f"{device['index']} — {device['name']}", device["name"])
+            # cuvamo INDEKS (tacan uredjaj), a prikazujemo ime
+            self.mic_combo.addItem(f"{device['index']} — {device['name']}", str(device["index"]))
 
         index = 0
         for i in range(self.mic_combo.count()):
@@ -725,6 +795,87 @@ class MainWindow(QMainWindow):
         if hasattr(self, "mic_test_btn"):
             self.mic_test_btn.setEnabled(self.mic_combo.count() > 1)
 
+    def _scan_mics(self, autoselect: bool = False) -> int:
+        """Testira svaki ulazni uredjaj ~1.2 s i pokaze peak RMS (dijagnostika)."""
+        from PySide6.QtWidgets import QApplication
+
+        from app.audio.capture import MicrophoneCapture, list_input_devices
+        from app.audio.vad import rms as _rms
+
+        devices = list_input_devices()
+        if not devices:
+            QMessageBox.warning(self, "Mikrofoni", "Nijedan ulazni uređaj nije pronađen.")
+            return
+
+        QApplication.setOverrideCursor(Qt.WaitCursor)
+        rows = []
+        try:
+            for device in devices:
+                capture = MicrophoneCapture(device=str(device["index"]))
+                peak = 0
+                try:
+                    capture.start()
+                    deadline = time.monotonic() + 1.2
+                    while time.monotonic() < deadline:
+                        chunk = capture.read(0.1)
+                        if chunk:
+                            peak = max(peak, int(_rms(chunk)))
+                    rows.append((device["name"], peak, capture.device_label))
+                except Exception as exc:
+                    rows.append((device["name"], -1, f"greška: {exc}"))
+                finally:
+                    try:
+                        capture.stop()
+                    except Exception:
+                        pass
+        finally:
+            QApplication.restoreOverrideCursor()
+
+        rows.sort(key=lambda row: row[1], reverse=True)
+        lines = []
+        for name, peak, _label in rows:
+            mark = "✔" if peak > 100 else ("~" if peak > 20 else "·")
+            lines.append(f"{mark}  {peak:>5}  {name}")
+
+        best_peak = rows[0][1] if rows else -1
+        note = "Izaberi uređaj sa najvećim RMS-om (✔)."
+        if autoselect and rows and best_peak >= 50:
+            best_name = rows[0][0]
+            for i in range(self.mic_combo.count()):
+                if self.mic_combo.itemText(i).endswith(best_name):
+                    self.mic_combo.setCurrentIndex(i)
+                    self.settings.mic_device = self.mic_combo.currentData() or ""
+                    save_settings(self.paths, self.settings)
+                    note = f"Automatski izabran: {best_name} (RMS={best_peak})."
+                    break
+
+        QMessageBox.information(
+            self,
+            "Skeniranje mikrofona",
+            "Peak RMS po uređaju (pričaj tokom skeniranja):\n\n"
+            + "\n".join(lines)
+            + f"\n\n{note}",
+        )
+        return best_peak
+
+    def _detect_wake_word_in_pcm(self, pcm: bytes) -> str:
+        """Provera wake word-a nad snimljenim audio baferom (uvek OpenWakeWord)."""
+        if not pcm:
+            return "nema audio podataka"
+
+        try:
+            from app.kws.openwakeword_kws import OpenWakeWordKws, threshold_from_sensitivity
+
+            kws = OpenWakeWordKws(threshold=threshold_from_sensitivity(self.settings.sensitivity))
+            if not OpenWakeWordKws.available(kws.model_dir):
+                return f"model nije pronađen ({kws.model_dir})"
+            kws.load()
+            peak = kws.peak_score(pcm)
+            verdict = "HEY JARVIS ✔" if peak >= kws.threshold else "nema fraze „Hey Jarvis“"
+            return f"max skor {peak:.3f} (prag {kws.threshold}) → {verdict}"
+        except Exception as exc:
+            return f"greška: {exc}"
+
     def _test_mic(self) -> None:
         from PySide6.QtCore import QTimer
 
@@ -733,6 +884,22 @@ class MainWindow(QMainWindow):
 
         if getattr(self, "_mic_test_capture", None) is not None:
             return
+
+        # Dok test radi, pauziraj live slušanje da isti uređaj ne otvorimo dva puta
+        # (SteelSeries Sonar ume da vrati tišinu na drugom stream-u).
+        self._resume_listening_after_test = self.listener_service is not None
+        if self._resume_listening_after_test:
+            self._stop_listening()
+
+        if not (self.mic_combo.currentData() or ""):
+            if self._scan_mics(autoselect=True) < 50:
+                QMessageBox.warning(
+                    self,
+                    "Nema signala",
+                    "Nijedan mikrofon nije dao signal. Proveri Windows privatnost "
+                    "(Settings → Privacy → Microphone → Allow desktop apps) i da mikrofon nije mute.",
+                )
+                return
 
         capture = MicrophoneCapture(device=self.mic_combo.currentData() or None)
         try:
@@ -744,15 +911,26 @@ class MainWindow(QMainWindow):
         self._mic_test_capture = capture
         self._mic_test_peak = 0
         self._mic_test_ticks = 0
+        self._mic_test_pcm: list = []
         self.mic_test_btn.setEnabled(False)
         self.mic_test_btn.setText("Slušam… pričaj")
 
         def tick() -> None:
-            chunk = capture.read(0.05)
-            if chunk:
-                level = rms(chunk)
-                self._mic_test_peak = max(self._mic_test_peak, int(level))
-                self.mic_level.setValue(min(100, int(level / 60)))
+            # Ispraznimo SVE dostupne chunkove — ranije se čitao samo 1 po ticku
+            # (100 ms), pa je test uzorkovao ~20% zvuka i „nekad čuo, nekad ne".
+            try:
+                while True:
+                    chunk = capture.read(0.0)
+                    if not chunk:
+                        break
+                    if self._mic_test_ticks < 3:  # grace: stream se stabilizuje (~300 ms)
+                        continue
+                    self._mic_test_pcm.append(chunk)
+                    level = rms(chunk)
+                    self._mic_test_peak = max(self._mic_test_peak, int(level))
+                    self.mic_level.setValue(min(100, int(level / 60)))
+            except Exception:
+                pass
             self._mic_test_ticks += 1
             if self._mic_test_ticks < 40:  # ~4 s
                 return
@@ -774,7 +952,17 @@ class MainWindow(QMainWindow):
                 verdict = "Tiho — pojačaj mikrofon ili priđi bliže."
             else:
                 verdict = "Nema signala — verovatno pogrešan uređaj."
-            QMessageBox.information(self, "Test mikrofona", f"Peak RMS: {peak}\n{verdict}")
+
+            wake = self._detect_wake_word_in_pcm(b"".join(self._mic_test_pcm))
+            QMessageBox.information(
+                self,
+                "Test mikrofona",
+                f"Peak RMS: {peak}\n{verdict}\n\nWake word: {wake}\n"
+                "Savet: reci „Hey Jarvis“ blizu mikrofona; ako score/transkript ne raste, "
+                "pojačaj mikrofon ili izaberi drugi uređaj (🔍).",
+            )
+            if self._resume_listening_after_test:
+                self._start_listening()
 
         self._mic_test_timer = QTimer(self)
         self._mic_test_timer.timeout.connect(tick)
@@ -788,7 +976,7 @@ class MainWindow(QMainWindow):
             from app.audio.vad import UtteranceRecorder, VadConfig
             from app.core.listener_core import ListenerCore
             from app.core.listener_service import ListenerService
-            from app.kws.sherpa_kws import SherpaKws, threshold_from_sensitivity
+            from app.kws.openwakeword_kws import OpenWakeWordKws, threshold_from_sensitivity
             from app.stt.base import create_stt
 
             if not mic_available():
@@ -797,12 +985,11 @@ class MainWindow(QMainWindow):
                 )
 
             threshold = threshold_from_sensitivity(self.settings.sensitivity)
-            kws = SherpaKws(threshold=threshold)
-            if not SherpaKws.available(kws.model_dir):
-                raise RuntimeError(
-                    "Sherpa KWS model „Kortik“ nije pronađen. "
-                    f"Očekivana lokacija: {kws.model_dir}"
-                )
+
+            # Wake word je UVEK akusticni OpenWakeWord model (nikad STT transkript).
+            kws = OpenWakeWordKws(threshold=threshold)
+            if not OpenWakeWordKws.available(kws.model_dir):
+                raise RuntimeError(f"OpenWakeWord model nije dostupan ({kws.model_dir})")
             kws.load()
 
             async def _credentials():
@@ -813,30 +1000,45 @@ class MainWindow(QMainWindow):
             stt, note = create_stt(
                 self.settings.stt_mode,
                 self.settings.language,
+                model_size=getattr(self.settings, "stt_model_size", "small"),
+                cloud_model=getattr(self.settings, "stt_cloud_model", "whisper-large-v3-turbo"),
                 api=self.api,
                 credentials_provider=_credentials,
             )
             if note:
-                self.logger.warning("STT: %s", note)
+                if note in ("cloud", "local"):
+                    self.logger.info("STT režim: %s", note)
+                else:
+                    self.logger.warning("STT: %s", note)
             if stt is None:
                 raise RuntimeError(f"STT nije dostupan: {note}")
 
             recorder = UtteranceRecorder(VadConfig())
             core = ListenerCore(kws, recorder, stt)
             capture = MicrophoneCapture(device=self.mic_combo.currentData() or None)
-            self.listener_service = ListenerService(core, capture, on_action=self._handle_listener_action)
+            self.listener_service = ListenerService(
+                core,
+                capture,
+                on_action=self._handle_listener_action,
+                on_level=lambda level: self.signals.listen_level.emit(int(level)),
+                on_error=lambda msg: self.signals.listener_event.emit({"kind": "error", "text": str(msg)}),
+            )
             self.runner.submit(self.listener_service.start())
             self.listen_check.blockSignals(True)
             self.listen_check.setChecked(True)
             self.listen_check.blockSignals(False)
             self.listen_btn.setText("Zaustavi slušanje")
+            self.settings.listening = True
+            save_settings(self.paths, self.settings)
             self._set_status(
                 self.voice_label,
-                f"Slušanje: tražim „{self.settings.wake_word}“ (STT={self.settings.stt_mode})",
+                f"Slušanje: tražim „Hey Jarvis“ (STT={self.settings.stt_mode})",
                 "ok",
             )
             self.logger.info(
-                "Listening pokrenut (STT=%s, threshold=%.2f)", type(stt).__name__, threshold
+                "Listening pokrenut (wake=oww, STT=%s, threshold=%.2f)",
+                type(stt).__name__,
+                threshold,
             )
             self.runner.submit(self._heartbeat_once())
         except Exception as e:
@@ -860,6 +1062,8 @@ class MainWindow(QMainWindow):
         self.listen_check.blockSignals(False)
         if hasattr(self, "listen_btn"):
             self.listen_btn.setText("Uključi slušanje")
+        self.settings.listening = False
+        save_settings(self.paths, self.settings)
         self._set_status(self.voice_label, "⏸️ Slušanje je isključeno", "warn")
         self.runner.submit(self._heartbeat_once())
 
@@ -879,6 +1083,10 @@ class MainWindow(QMainWindow):
             )
             await self._task_command(getattr(action, "command", ""), getattr(action, "query", ""))
 
+    def _on_listen_level(self, level: int) -> None:
+        if hasattr(self, "listen_level"):
+            self.listen_level.setValue(max(0, min(100, int(level))))
+
     def _on_listener_event(self, payload: dict) -> None:
         kind = (payload or {}).get("kind")
         if kind == "wake":
@@ -897,19 +1105,17 @@ class MainWindow(QMainWindow):
                 f"🎙️ Komanda: {payload.get('command')} {payload.get('query')}".strip(),
                 "ok",
             )
-
-    def _refresh_log(self) -> None:
-        try:
-            self.log_view.setPlainText(tail_log(self.paths.logs, 60))
-            self.log_view.verticalScrollBar().setValue(self.log_view.verticalScrollBar().maximum())
-        except Exception:
-            pass
+        elif kind == "error":
+            # Petlja slusanja je pala — vrati UI u iskljuceno stanje (bez polu-otvorenog mikrofona).
+            self._stop_listening()
+            self._set_status(self.voice_label, "❌ Slušanje je prekinuto — " + str(payload.get("text") or ""), "err")
 
     def _save_settings_ui(self) -> None:
-        save_settings(self.paths, self.settings)
         self.settings.device_name = self.device_name_edit.text().strip() or self.settings.device_name
         self.settings.mic_device = self.mic_combo.currentData() or ""
         self.settings.stt_mode = self.stt_combo.currentText()
+        self.settings.stt_model_size = self.model_size_combo.currentText()
+        self.settings.stt_cloud_model = self.cloud_model_combo.currentData() or "whisper-large-v3-turbo"
         self.settings.language = self.lang_combo.currentText()
         self.settings.sensitivity = self.sens_slider.value() / 100.0
         self.settings.listen_only_in_voice = self.only_vc_check.isChecked()
@@ -924,7 +1130,37 @@ class MainWindow(QMainWindow):
         except Exception as e:
             self.logger.warning("Autostart greška: %s", e)
         self.logger.info("Podešavanja sačuvana.")
-        self._set_status(self.command_status, "Podešavanja su sačuvana.", "ok")
+        self._set_status(self.command_status, "Podešavanja sačuvana.", "ok")
+
+        # Primeni ODMAH: ako slusanje radi, restartuj ga sa novim podesavanjima
+        # (STT model se izbacuje iz RAM-a i ucitava novi).
+        if self.listener_service is not None:
+            self._restart_listening()
+
+    def _restart_listening(self) -> None:
+        """Stopni star servis, oslobodi stari STT model i pokreni novi (bez gašenja checkbox-a)."""
+        service = self.listener_service
+        self.listener_service = None
+        if service is not None:
+            # Odmah oslobodi mikrofon i stari model iz RAM-a
+            try:
+                service.capture.stop()
+            except Exception:
+                pass
+            core = getattr(service, "core", None)
+            stt = getattr(core, "stt", None) if core is not None else None
+            close = getattr(stt, "close", None)
+            if callable(close):
+                try:
+                    close()
+                except Exception:
+                    pass
+            try:
+                self.runner.submit(service.stop())  # cisti loop task u pozadini
+            except Exception:
+                pass
+            self.logger.info("Listening restartovan (nova podešavanja primenjena).")
+        self._start_listening()
 
     def _open_dashboard(self) -> None:
         QDesktopServices.openUrl(QUrl("https://kortikbot.xyz/user/listener"))

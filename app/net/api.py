@@ -215,6 +215,7 @@ class ListenerApi:
         device_secret: str,
         wav_bytes: bytes,
         language: str = "sr",
+        model: str = "whisper-large-v3-turbo",
     ) -> Dict[str, Any]:
         """Cloud STT: salje kratak WAV (16 kHz mono) na backend, HMAC-potpisan."""
         import base64
@@ -222,6 +223,7 @@ class ListenerApi:
         payload = {
             "audio_b64": base64.b64encode(wav_bytes).decode("ascii"),
             "language": (language or "sr")[:8],
+            "model": (model or "whisper-large-v3-turbo")[:64],
             "duration_ms": 0,
         }
         raw = json.dumps(

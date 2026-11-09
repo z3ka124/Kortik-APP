@@ -27,6 +27,14 @@ SILENCE = chunk(0)
 SPEECH = chunk(3000)
 
 
+class ConfigDefaultsTests(unittest.TestCase):
+    def test_silence_ms_is_one_second(self):
+        self.assertEqual(VadConfig().silence_ms, 700)
+
+    def test_max_utterance_allows_long_titles(self):
+        self.assertEqual(VadConfig().max_utterance_ms, 6000)
+
+
 class RmsTests(unittest.TestCase):
     def test_silence(self):
         self.assertEqual(rms(SILENCE), 0.0)

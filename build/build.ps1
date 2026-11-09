@@ -49,7 +49,8 @@ if (-not $SkipTests) {
 Write-Host "== 3/7 Verzija i update kljuc ==" -ForegroundColor Cyan
 $env:KORTIK_LISTENER_VERSION = $Version
 $env:KORTIK_LISTENER_CHANNEL = "beta"
-Write-Host "   verzija: $Version (beta)"
+Set-Content -Path "app\_build_version.txt" -Value $Version -Encoding ascii -NoNewline
+Write-Host "   verzija: $Version (beta) — upisana u app\_build_version.txt"
 
 if (-not (Test-Path "app\kws\keywords_kortik.txt")) {
     throw "Nedostaje app\kws\keywords_kortik.txt — .exe ne bi imao wake word."

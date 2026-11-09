@@ -40,7 +40,7 @@ def main() -> int:
         "app.config", "app.version", "app.logs",
         "app.core.parser", "app.core.listener_core", "app.core.listener_service",
         "app.audio.vad", "app.audio.capture",
-        "app.kws.sherpa_kws", "app.stt.base", "app.stt.cloud", "app.stt.local_whisper",
+        "app.kws.openwakeword_kws", "app.stt.base", "app.stt.cloud", "app.stt.local_whisper",
         "app.stt.wav", "app.updater.manifest", "app.updater.installer",
         "app.system.autostart", "app.net.api", "app.auth.device_flow",
         "app.security.dpapi", "app.security.storage", "app.security.request_signer",
@@ -60,32 +60,40 @@ def main() -> int:
         ("mic_test_btn", "test mikrofona"),
         ("listen_btn", "dugme za slusanje"),
         ("listen_check", "checkbox slusanja"),
+        ("model_size_combo", "STT model size dropdown"),
+        ("cloud_model_combo", "cloud STT model dropdown"),
         ("_reload_mics", "osvezavanje liste mikrofona"),
     ):
         check(f"UI: {label}", control in ui)
 
     check("UI: nema setEnabled(False) na listen", "listen_check.setEnabled(False)" not in ui)
+    check("UI: wake word je uvek OWW (nema wake_combo)", "wake_combo" not in ui)
+    check("UI: tekst ceka 'Hey Jarvis'", "čekam „Hey Jarvis" in ui)
+    check("UI: log sekcija uklonjena", "log_view" not in ui and "Osveži log" not in ui)
+    check(
+        "Config: stt_cloud_model",
+        "stt_cloud_model" in (PROJECT_ROOT / "app" / "config.py").read_text(encoding="utf-8"),
+    )
 
-    # 4) wake word konfiguracija
-    keywords = PROJECT_ROOT / "app" / "kws" / "keywords_kortik.txt"
-    if keywords.exists():
-        lines = [ln.strip() for ln in keywords.read_text(encoding="utf-8").splitlines() if ln.strip()]
-        has_kortik = any("K OR TI K" in ln for ln in lines)
-        thresholds = []
-        for line in lines:
-            try:
-                thresholds.append(float(line.rsplit("#", 1)[1]))
-            except Exception:
-                thresholds.append(0.0)
-        check("KWS: keywords sadrze KORTIK", has_kortik, f"{len(lines)} linija")
-        check("KWS: pragovi >= 0.15", bool(thresholds) and min(thresholds) >= 0.15, f"min={min(thresholds) if thresholds else 'n/a'}")
-    else:
-        check("KWS: keywords fajl", False, str(keywords))
+    # 4) wake word konfiguracija (OpenWakeWord)
+    from app.kws.openwakeword_kws import default_model_dir, threshold_from_sensitivity
 
-    # 5) model
-    from app.kws.sherpa_kws import SherpaKws, default_model_dir
     model_dir = default_model_dir()
-    check("KWS: model pronadjen", SherpaKws.available(model_dir), str(model_dir))
+    model_present = (model_dir / "hey_jarvis_v0.1.onnx").exists() and (
+        model_dir / "melspectrogram.onnx"
+    ).exists() and (model_dir / "embedding_model.onnx").exists()
+    check("OWW: model pronadjen", model_present, str(model_dir))
+    low, mid = threshold_from_sensitivity(0.0), threshold_from_sensitivity(0.5)
+    check(
+        "OWW: prag iz klizaca",
+        0.0 < low <= 1.0 and 0.0 < mid <= 1.0 and low >= mid,
+        f"0.0->{low} · 0.5->{mid}",
+    )
+
+    # 5) engine dostupan (onnxruntime + openwakeword)
+    from app.kws.openwakeword_kws import OpenWakeWordKws
+
+    check("OWW: engine dostupan", OpenWakeWordKws.available(model_dir))
 
     # 6) update (manifest + javni kljuc)
     from app.updater.manifest import verify_signature

@@ -30,6 +30,7 @@ def create_stt(
     model_size: str = "small",
     api: Any = None,
     credentials_provider: Any = None,
+    cloud_model: str = "whisper-large-v3-turbo",
 ) -> Tuple[Optional[SpeechToText], str]:
     """
     Vraca (engine, napomena). `engine` je None samo ako ni lokalni nije moguc.
@@ -41,7 +42,12 @@ def create_stt(
     note = ""
 
     if normalized == "cloud":
-        cloud = CloudSpeechToText(api=api, credentials_provider=credentials_provider, language=language)
+        cloud = CloudSpeechToText(
+            api=api,
+            credentials_provider=credentials_provider,
+            language=language,
+            model=cloud_model,
+        )
         if cloud.available():
             return cloud, "cloud"
         note = "Cloud STT nije dostupan (nema sesije) — prebacujem na lokalni model."

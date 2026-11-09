@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict
 
-DEFAULT_WAKE_WORD = "kortik"
+DEFAULT_WAKE_WORD = "hey jarvis"
 DEFAULT_LANGUAGE = "sr"
 
 
@@ -52,15 +52,28 @@ class AppPaths:
 class Settings:
     """Sve sto NIJE tajna — tajne idu u SecretStore (DPAPI)."""
 
-    wake_word: str = DEFAULT_WAKE_WORD
+    # "oww"  = OpenWakeWord akusticni model „hey_jarvis" (brzo, ~0.1-0.3% CPU) — DEFAULT
+    # "stt"  = wake word se trazi u transkriptu (Whisper, razume srpski) — fallback
+    wake_engine: str = "oww"
     language: str = DEFAULT_LANGUAGE
     stt_mode: str = "local"           # local | cloud
+    # Lokalni Whisper model: small (default, najbolje za srpski) | base | tiny
+    stt_model_size: str = "small"
+    # Cloud (Groq Whisper) model — koristi se samo kad je stt_mode == "cloud".
+    # Vrednosti: "whisper-large-v3-turbo" (default, brži) | "whisper-large-v3" (najtačniji).
+    stt_cloud_model: str = "whisper-large-v3-turbo"
     mic_device: str = ""              # prazno = sistemski default
     mic_gain: float = 1.0
-    sensitivity: float = 0.5          # 0..1 -> prag KWS-a
+    sensitivity: float = 0.75          # 0..1 -> prag KWS-a
     listen_only_in_voice: bool = True
+    # Da li je korisnik ostavio slusanje upaljeno — pamti se kroz restart
+    listening: bool = False
     autostart: bool = False
     start_minimized: bool = False
+    # Ako je True, updater odbija installer bez valjanog Authenticode potpisa.
+    # Default False: manifest je vec Ed25519-potpisan (sha256 unutra), sto je
+    # dovoljna garancija za beta fazu bez EV sertifikata.
+    require_authenticode: bool = False
     api_base_url: str = ""
     channel: str = "stable"
     device_name: str = ""

@@ -22,7 +22,7 @@ SPEECH = chunk(3000)
 
 
 class FakeKws:
-    def __init__(self, keyword: str = "KORTIK"):
+    def __init__(self, keyword: str = "HEY JARVIS"):
         self.keyword = keyword
         self.calls = 0
         self.resets = 0
@@ -59,7 +59,7 @@ class FakeClock:
         return self.value
 
 
-def make_core(keyword="KORTIK", stt_text="pusti senidah bez tebe", clock=None, cooldown=1.2):
+def make_core(keyword="HEY JARVIS", stt_text="pusti senidah bez tebe", clock=None, cooldown=1.2):
     kws = FakeKws(keyword)
     recorder = UtteranceRecorder(VadConfig(speech_rms=350, silence_ms=100, min_speech_ms=60, pre_roll_ms=40))
     stt = FakeStt(stt_text)
@@ -80,7 +80,7 @@ class WakeAndRecordTests(unittest.TestCase):
         wake = core.process_chunk(SILENCE)
         self.assertIsNotNone(wake)
         self.assertEqual(wake.kind, "wake")
-        self.assertEqual(wake.keyword, "KORTIK")
+        self.assertEqual(wake.keyword, "HEY JARVIS")
         self.assertTrue(core.is_armed)
 
         # nakon wake word-a snimamo govor + tisinu -> dobijamo utterance
@@ -125,7 +125,7 @@ class UtteranceToCommandTests(unittest.TestCase):
         self.assertEqual(stt.calls, 1)
 
     def test_wake_word_only(self):
-        core, _, _, _ = make_core(stt_text="Kortik")
+        core, _, _, _ = make_core(stt_text="Hey Jarvis")
         action = core.process_utterance(SPEECH * 10)
         self.assertEqual(action.kind, "wake_only")
 
@@ -153,7 +153,7 @@ class UtteranceToCommandTests(unittest.TestCase):
         core, _, _, _ = make_core()
         self.assertEqual(core.parse_text("skip").kind, "command")
         self.assertEqual(core.parse_text("skip").command, "skip")
-        self.assertEqual(core.parse_text("Hej Kortik").kind, "wake_only")
+        self.assertEqual(core.parse_text("Hej Jarvis").kind, "wake_only")
         self.assertIsNone(core.parse_text(""))
 
 

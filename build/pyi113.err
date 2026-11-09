@@ -1,0 +1,304 @@
+379 INFO: PyInstaller: 6.22.3, contrib hooks: 2026.9
+380 INFO: Python: 3.13.17
+405 INFO: Platform: Windows-11-10.0.26300-SP0
+405 INFO: Python environment: C:\Kortik\Kortik-Listener-App\.venv-org
+409 INFO: Removing temporary files and cleaning cache in C:\Users\sanin\AppData\Local\pyinstaller
+567 WARNING: Failed to collect submodules for 'onnxruntime.quantization' because importing 'onnxruntime.quantization' raised: ModuleNotFoundError: No module named 'onnx'
+11745 INFO: Module search paths (PYTHONPATH):
+['C:\\Kortik\\Kortik-Listener-App',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\python313.zip',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\DLLs',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313\\Lib',
+ 'C:\\Users\\sanin\\AppData\\Local\\Programs\\Python\\Python313',
+ 'C:\\Kortik\\Kortik-Listener-App\\.venv-org',
+ 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages',
+ 'C:\\Kortik\\Kortik-Listener-App']
+14149 INFO: Appending 'binaries' from .spec
+14153 INFO: Appending 'datas' from .spec
+14223 INFO: checking Analysis
+14223 INFO: Building Analysis because Analysis-00.toc is non existent
+14223 INFO: Looking for Python shared library...
+14224 INFO: Using Python shared library: C:\Users\sanin\AppData\Local\Programs\Python\Python313\python313.dll
+14224 INFO: Running Analysis Analysis-00.toc
+14224 INFO: Target bytecode optimization level: 0
+14224 INFO: Initializing module dependency graph...
+14227 INFO: Initializing module graph hook caches...
+14293 INFO: Analyzing modules for base_library.zip ...
+16124 INFO: Processing standard module hook 'hook-encodings.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+16826 INFO: Processing standard module hook 'hook-math.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+18604 INFO: Processing standard module hook 'hook-pickle.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+20299 INFO: Processing standard module hook 'hook-heapq.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+22119 INFO: Caching module dependency graph...
+22183 INFO: Analyzing C:\Kortik\Kortik-Listener-App\app\main.py
+22533 INFO: Processing standard module hook 'hook-multiprocessing.util.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+22808 INFO: Processing standard module hook 'hook-xml.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+23337 INFO: Processing standard module hook 'hook-sysconfig.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+23345 INFO: Processing standard module hook 'hook-_ctypes.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+24091 INFO: Processing standard module hook 'hook-PySide6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+24421 INFO: Processing standard module hook 'hook-shiboken6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+24688 INFO: Processing standard module hook 'hook-PySide6.QtNetwork.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+28387 INFO: Processing standard module hook 'hook-PySide6.QtCore.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+33487 INFO: Processing standard module hook 'hook-PySide6.QtWidgets.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+38774 INFO: Processing standard module hook 'hook-PySide6.QtGui.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+78813 INFO: Processing standard module hook 'hook-platform.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+79641 INFO: Processing pre-safe-import-module hook 'hook-typing_extensions.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+79644 INFO: SetuptoolsInfo: initializing cached setuptools info...
+81213 INFO: Processing pre-safe-import-module hook 'hook-backports.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+81214 INFO: Setuptools: 'backports' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.backports'!
+81221 INFO: Processing standard module hook 'hook-setuptools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+81244 INFO: Processing pre-safe-import-module hook 'hook-distutils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+81287 INFO: Processing pre-safe-import-module hook 'hook-jaraco.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+81289 INFO: Setuptools: 'jaraco' appears to be a full setuptools-vendored copy - creating alias to 'setuptools._vendor.jaraco'!
+81300 INFO: Processing pre-safe-import-module hook 'hook-more_itertools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+81301 INFO: Setuptools: 'more_itertools' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.more_itertools'!
+81446 INFO: Processing standard module hook 'hook-_osx_support.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+81462 INFO: Processing pre-safe-import-module hook 'hook-packaging.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+81832 INFO: Processing standard module hook 'hook-setuptools._vendor.jaraco.text.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+81834 INFO: Processing pre-safe-import-module hook 'hook-importlib_resources.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+82335 INFO: Processing pre-safe-import-module hook 'hook-tomli.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+82336 INFO: Setuptools: 'tomli' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.tomli'!
+82910 INFO: Processing pre-safe-import-module hook 'hook-wheel.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_safe_import_module'
+82911 INFO: Setuptools: 'wheel' appears to be a setuptools-vendored copy - creating alias to 'setuptools._vendor.wheel'!
+83952 INFO: Processing standard module hook 'hook-cryptography.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+85424 INFO: hook-cryptography: cryptography does not seem to be using dynamically linked OpenSSL.
+85553 INFO: Processing standard module hook 'hook-sounddevice.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+85628 INFO: Processing standard module hook 'hook-numpy.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+86945 INFO: Processing standard module hook 'hook-webbrowser.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+88547 INFO: Processing standard module hook 'hook-difflib.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+89365 INFO: Processing standard module hook 'hook-charset_normalizer.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+90140 INFO: Processing standard module hook 'hook-urllib3.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+90830 INFO: Processing standard module hook 'hook-certifi.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+91512 INFO: Processing standard module hook 'hook-onnxruntime.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+91608 INFO: Processing pre-safe-import-module hook 'hook-tensorflow.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\pre_safe_import_module'
+91708 INFO: Processing standard module hook 'hook-scipy.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+92618 INFO: Processing standard module hook 'hook-pycparser.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+93176 INFO: Processing standard module hook 'hook-sklearn.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+94080 INFO: Processing standard module hook 'hook-sklearn.utils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+95342 INFO: Processing standard module hook 'hook-scipy.linalg.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+95643 INFO: Processing standard module hook 'hook-scipy.special._ufuncs.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+97815 INFO: Processing standard module hook 'hook-scipy.spatial._ckdtree.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+98754 INFO: Processing standard module hook 'hook-scipy.spatial.transform.rotation.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+100063 INFO: Processing standard module hook 'hook-scipy.stats._stats.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+100819 INFO: Processing standard module hook 'hook-scipy.sparse.csgraph.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+102134 INFO: Processing standard module hook 'hook-scipy.special._ellip_harm_2.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+103421 INFO: Processing standard module hook 'hook-cloudpickle.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+104054 INFO: Processing standard module hook 'hook-narwhals.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106752 INFO: Processing standard module hook 'hook-sklearn.externals.array_api_compat.numpy.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106836 INFO: Processing standard module hook 'hook-sklearn.externals.array_api_compat.cupy.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106869 INFO: Processing standard module hook 'hook-sklearn.externals.array_api_compat.torch.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+106936 INFO: Processing standard module hook 'hook-sklearn.externals.array_api_compat.dask.array.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+107731 INFO: Processing standard module hook 'hook-sklearn.metrics.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111071 INFO: Processing standard module hook 'hook-sklearn.metrics.cluster.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111200 INFO: Processing standard module hook 'hook-sklearn.metrics.pairwise.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111497 INFO: Processing standard module hook 'hook-sklearn.cluster.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+111808 INFO: Processing standard module hook 'hook-sklearn.neighbors.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+112015 INFO: Processing standard module hook 'hook-sklearn.linear_model.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+114334 INFO: Processing standard module hook 'hook-av.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+115031 INFO: Processing standard module hook 'hook-PIL.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+115135 INFO: Processing standard module hook 'hook-PIL.Image.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+115595 INFO: Processing standard module hook 'hook-xml.etree.cElementTree.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+115779 INFO: Processing standard module hook 'hook-PIL.ImageFilter.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+116675 INFO: Processing standard module hook 'hook-anyio.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+119154 INFO: Processing standard module hook 'hook-sqlite3.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+121132 INFO: Processing standard module hook 'hook-fsspec.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+122166 INFO: Analyzing hidden import 'app.main'
+122171 INFO: Analyzing hidden import 'faster_whisper.assets'
+122172 INFO: Analyzing hidden import 'ctranslate2.converters'
+122514 INFO: Analyzing hidden import 'ctranslate2.converters.eole_ct2'
+122533 INFO: Analyzing hidden import 'onnxruntime.capi.convert_npz_to_onnx_adapter'
+122543 INFO: Analyzing hidden import 'onnxruntime.datasets'
+122544 INFO: Analyzing hidden import 'onnxruntime.tools'
+122550 INFO: Analyzing hidden import 'onnxruntime.tools.check_onnx_model_mobile_usability'
+122584 INFO: Analyzing hidden import 'onnxruntime.tools.convert_onnx_models_to_ort'
+122623 INFO: Analyzing hidden import 'onnxruntime.tools.make_dynamic_shape_fixed'
+122626 INFO: Analyzing hidden import 'onnxruntime.tools.offline_tuning'
+122633 INFO: Analyzing hidden import 'onnxruntime.tools.onnx_randomizer'
+122636 INFO: Analyzing hidden import 'onnxruntime.tools.onnxruntime_test'
+122642 INFO: Analyzing hidden import 'onnxruntime.tools.optimize_onnx_model'
+122644 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py'
+122645 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs'
+122646 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.ArgType'
+122647 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.ArgTypeAndIndex'
+122750 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Attribute'
+122762 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.AttributeType'
+122763 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Checkpoint'
+122768 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DeprecatedKernelCreateInfos'
+122773 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DeprecatedNodeIndexAndKernelDefHash'
+122776 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DeprecatedSessionState'
+122780 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DeprecatedSubGraphSessionState'
+122784 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Dimension'
+122787 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DimensionValue'
+122791 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.DimensionValueType'
+122792 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.EdgeEnd'
+122794 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.FloatProperty'
+122797 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Graph'
+122809 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.InferenceSession'
+122813 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.IntProperty'
+122816 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.KernelTypeStrArgsEntry'
+122820 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.KernelTypeStrResolver'
+122823 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.MapType'
+122827 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Model'
+122835 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.ModuleState'
+122840 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Node'
+122852 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.NodeEdge'
+122857 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.NodeType'
+122858 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.NodesToOptimizeIndices'
+122864 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.OpIdKernelTypeStrArgsEntry'
+122867 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.OperatorSetId'
+122871 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.OptimizerGroup'
+122876 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.ParameterOptimizerState'
+122880 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.PropertyBag'
+122886 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.RuntimeOptimizationRecord'
+122890 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.RuntimeOptimizationRecordContainerEntry'
+122894 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.RuntimeOptimizations'
+122898 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.SequenceType'
+122901 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Shape'
+122904 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.SparseTensor'
+122909 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.StringProperty'
+122912 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.StringStringEntry'
+122915 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.Tensor'
+122922 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.TensorDataType'
+122924 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.TensorTypeAndShape'
+122927 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.TypeInfo'
+122930 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.TypeInfoValue'
+122931 INFO: Analyzing hidden import 'onnxruntime.tools.ort_format_model.ort_flatbuffers_py.fbs.ValueInfo'
+122935 INFO: Analyzing hidden import 'onnxruntime.tools.pytorch_export_contrib_ops'
+122940 INFO: Analyzing hidden import 'onnxruntime.tools.qdq_helpers'
+122940 INFO: Analyzing hidden import 'onnxruntime.tools.qdq_helpers.optimize_qdq_model'
+122942 INFO: Analyzing hidden import 'onnxruntime.tools.reduced_build_config_parser'
+122947 INFO: Analyzing hidden import 'onnxruntime.tools.remove_initializer_from_input'
+122949 INFO: Analyzing hidden import 'onnxruntime.tools.symbolic_shape_infer'
+123100 INFO: Analyzing hidden import 'onnxruntime.tools.update_onnx_opset'
+123102 INFO: Analyzing hidden import 'onnxruntime.transformers.affinity_helper'
+123104 INFO: Analyzing hidden import 'onnxruntime.transformers.benchmark'
+123127 INFO: Analyzing hidden import 'onnxruntime.transformers.benchmark_helper'
+123193 INFO: Analyzing hidden import 'onnxruntime.transformers.bert_perf_test'
+123209 INFO: Analyzing hidden import 'onnxruntime.transformers.bert_test_data'
+123224 INFO: Analyzing hidden import 'onnxruntime.transformers.compare_bert_results'
+123231 INFO: Analyzing hidden import 'onnxruntime.transformers.constants'
+123233 INFO: Analyzing hidden import 'onnxruntime.transformers.convert_generation'
+123399 INFO: Analyzing hidden import 'onnxruntime.transformers.convert_tf_models_to_pytorch'
+123407 INFO: Analyzing hidden import 'onnxruntime.transformers.convert_to_packing_mode'
+123421 INFO: Analyzing hidden import 'onnxruntime.transformers.dynamo_onnx_helper'
+123429 INFO: Analyzing hidden import 'onnxruntime.transformers.float16'
+123446 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_attention'
+123481 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_attention_clip'
+123489 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_attention_sam2'
+123503 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_attention_unet'
+123537 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_attention_vae'
+123546 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_bart_attention'
+123560 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_base'
+123566 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_bias_add'
+123568 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_biasgelu'
+123571 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_biassplitgelu'
+123575 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_conformer_attention'
+123582 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_constant_fold'
+123588 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_embedlayer'
+123608 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_fastgelu'
+123620 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gelu'
+123628 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gelu_approximation'
+123629 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gemmfastgelu'
+123634 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gpt_attention'
+123647 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gpt_attention_megatron'
+123657 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_gpt_attention_no_past'
+123663 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_group_norm'
+123669 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_layernorm'
+123682 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_mha_dit'
+123696 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_mha_mmdit'
+123710 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_nhwc_conv'
+123714 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_options'
+123720 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_qordered_attention'
+123732 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_qordered_gelu'
+123736 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_qordered_layernorm'
+123739 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_qordered_matmul'
+123745 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_quickgelu'
+123747 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_reshape'
+123753 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_rotary_attention'
+123800 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_shape'
+123804 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_simplified_layernorm'
+123809 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_skip_group_norm'
+123816 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_skiplayernorm'
+123824 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_transpose'
+123830 INFO: Analyzing hidden import 'onnxruntime.transformers.fusion_utils'
+123841 INFO: Analyzing hidden import 'onnxruntime.transformers.huggingface_models'
+123843 INFO: Analyzing hidden import 'onnxruntime.transformers.import_utils'
+123845 INFO: Analyzing hidden import 'onnxruntime.transformers.io_binding_helper'
+123862 INFO: Analyzing hidden import 'onnxruntime.transformers.large_model_exporter'
+123875 INFO: Analyzing hidden import 'onnxruntime.transformers.metrics'
+123881 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_exporter'
+123901 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model'
+123950 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_bart'
+123957 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_bert'
+123979 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_bert_keras'
+123993 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_bert_tf'
+124009 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_clip'
+124012 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_conformer'
+124014 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_gpt2'
+124018 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_mmdit'
+124031 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_phi'
+124060 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_sam2'
+124065 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_t5'
+124088 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_tnlr'
+124095 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_unet'
+124106 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_model_vae'
+124109 INFO: Analyzing hidden import 'onnxruntime.transformers.onnx_utils'
+124111 INFO: Analyzing hidden import 'onnxruntime.transformers.optimizer'
+124129 INFO: Analyzing hidden import 'onnxruntime.transformers.past_helper'
+124134 INFO: Analyzing hidden import 'onnxruntime.transformers.profile_result_processor'
+124145 INFO: Analyzing hidden import 'onnxruntime.transformers.profiler'
+124154 INFO: Analyzing hidden import 'onnxruntime.transformers.quantize_helper'
+124640 INFO: Analyzing hidden import 'onnxruntime.transformers.shape_infer_helper'
+124645 INFO: Analyzing hidden import 'onnxruntime.transformers.shape_optimizer'
+124658 INFO: Analyzing hidden import 'onnxruntime.transformers.torch_onnx_export_helper'
+124660 INFO: Analyzing hidden import 'aiohttp.pytest_plugin'
+124817 INFO: Analyzing hidden import 'certifi.__main__'
+124819 INFO: Analyzing hidden import 'certifi.tests'
+124819 INFO: Analyzing hidden import 'certifi.tests.test_certify'
+124821 INFO: Processing module hooks (post-graph stage)...
+125740 WARNING: Hidden import "pycparser.lextab" not found!
+125740 WARNING: Hidden import "pycparser.yacctab" not found!
+125829 INFO: Processing standard module hook 'hook-sklearn.tree.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\stdhooks'
+126208 INFO: Processing standard module hook 'hook-PIL.SpiderImagePlugin.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+126303 WARNING: Hidden import "scipy.special._cdflib" not found!
+126419 INFO: Performing binary vs. data reclassification (977 entries)
+127035 INFO: Looking for ctypes DLLs
+127205 INFO: Analyzing run-time hooks ...
+127214 INFO: Including run-time hook 'pyi_rth_pkgutil.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+127225 INFO: Including run-time hook 'pyi_rth_inspect.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+127235 INFO: Including run-time hook 'pyi_rth_multiprocessing.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+127246 INFO: Including run-time hook 'pyi_rth_setuptools.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+127254 INFO: Including run-time hook 'pyi_rth_cryptography_openssl.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\_pyinstaller_hooks_contrib\\rthooks'
+127267 INFO: Including run-time hook 'pyi_rth_pyside6.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\rthooks'
+127277 INFO: Processing pre-find-module-path hook 'hook-_pyi_rth_utils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks\\pre_find_module_path'
+127286 INFO: Processing standard module hook 'hook-_pyi_rth_utils.py' from 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PyInstaller\\hooks'
+127353 INFO: Creating base_library.zip...
+127374 INFO: Looking for dynamic libraries
+131587 INFO: Extra DLL search directories (AddDllDirectory): ['C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\shiboken6', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\numpy.libs', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\ctranslate2', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\av.libs', 'C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\scipy.libs']
+131588 INFO: Extra DLL search directories (PATH): ['C:\\Kortik\\Kortik-Listener-App\\.venv-org\\Lib\\site-packages\\PySide6']
+135252 INFO: Warnings written to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\warn-pyinstaller.txt
+135435 INFO: Graph cross-reference written to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\xref-pyinstaller.html
+135549 INFO: checking PYZ
+135549 INFO: Building PYZ because PYZ-00.toc is non existent
+135549 INFO: Building PYZ (ZlibArchive) C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\PYZ-00.pyz
+137222 INFO: Building PYZ (ZlibArchive) C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\PYZ-00.pyz completed successfully.
+137267 INFO: checking PKG
+137267 INFO: Building PKG because PKG-00.toc is non existent
+137267 INFO: Building PKG (CArchive) KortikListener.pkg
+137308 INFO: Building PKG (CArchive) KortikListener.pkg completed successfully.
+137309 INFO: Bootloader C:\Kortik\Kortik-Listener-App\.venv-org\Lib\site-packages\PyInstaller\bootloader\Windows-64bit-intel\runw.exe
+137309 INFO: checking EXE
+137309 INFO: Building EXE because EXE-00.toc is non existent
+137309 INFO: Building EXE from EXE-00.toc
+137310 INFO: Copying bootloader EXE to C:\Kortik\Kortik-Listener-App\build\work\pyinstaller\KortikListener.exe
+137379 INFO: Copying icon to EXE
+137413 INFO: Copying 0 resources to EXE
+137413 INFO: Embedding manifest in EXE
+137446 INFO: Appending PKG archive to EXE
+137584 INFO: Fixing EXE headers
+137916 INFO: Building EXE from EXE-00.toc completed successfully.
+137926 INFO: checking COLLECT
+137927 INFO: Building COLLECT because COLLECT-00.toc is non existent
+137927 INFO: Removing dir C:\Kortik\Kortik-Listener-App\build\output\KortikListener
+138324 INFO: Building COLLECT COLLECT-00.toc
+140520 INFO: Building COLLECT COLLECT-00.toc completed successfully.
+140546 INFO: Build complete! The results are available in: C:\Kortik\Kortik-Listener-App\build\output

@@ -20,18 +20,9 @@ za Kortik bota — bez drugog bota, bez Discord audio capture-a i bez deljenja b
 └───────────────────────────────────────────┘
 ```
 
-## Bezbednosni model (ukratko)
+## Privatnost
 
-| Rizik | Kako je rešeno |
-|---|---|
-| Kradja bot tokena | **Bot token nikad nije u aplikaciji.** Muziku pušta centralni bot. |
-| Lozinka Discord naloga | Ne koristi se. Samo device pairing (6-cifreni kod na dashboardu). |
-| Krađa lokalnih tajni | `device_secret` i `refresh_token` su DPAPI-enkriptovani (`%LOCALAPPDATA%\Kortik\Listener\secrets.bin`). |
-| Lažni zahtevi ka backendu | HMAC-SHA256 (`METHOD\|PATH\|TS\|NONCE\|SHA256(BODY)`) + timestamp ±60 s + nonce replay cache. |
-| Replay / duplo puštanje | Nonce cache + idempotency `request_id`. |
-| Zlonamerni update | Ed25519 potpis manifesta, HTTPS-only URL, SHA-256 fajla, blokada downgrade-a, Authenticode (M6). |
-| Curenje tajni u logove | `app/logs.py` redaktuje tokene pre upisa. |
-| Preterane permisije | Aplikacija radi bez admina; device JWT ima `type=device` i ne može na dashboard rute. |
+Aplikacija ne sadrži bot token ni lozinke Discord naloga — koristi se bezbedno uparivanje uređaja (6-cifreni kod sa dashboarda). Lokalne tajne su enkriptovane na računaru.
 
 ## Struktura
 
@@ -66,41 +57,6 @@ Ako PySide6 još nije instaliran, GUI neće startovati, ali **svi testovi rade**
 
 ```powershell
 python -m unittest discover -s tests -p "test_*.py" -v
-```
-
-## Backend ugovor (već implementirano u `Kortik-Dahabord-Backend`)
-
-| Metoda | Ruta | Opis |
-|---|---|---|
-| POST | `/api/listener/auth/device/start` | `device_code` + `user_code` (10 min) |
-| POST | `/api/listener/auth/device/approve` | dashboard potvrđuje `user_code` |
-| POST | `/api/listener/auth/device/token` | tokeni + `device_secret` (jednom) |
-| POST | `/api/listener/auth/device/refresh` | rotacija refresh tokena |
-| POST | `/api/listener/heartbeat` | `in_voice`, `busy`, `plugin_enabled` |
-| POST | `/api/listener/command` | glasovna komanda (HMAC) |
-| POST | `/api/listener/transcribe` | cloud STT (Groq Whisper, HMAC, max 12 s) |
-| GET | `/api/listener/version` | potpisan update manifest |
-| GET/DELETE | `/api/listener/devices` | lista / opoziv uređaja |
-
-Bot strana: `cogs/voice_bridge.py` → `/api/voice/from-user`, `/api/voice/user-state`
-(oba zahtevaju interni HMAC `LISTENER_BRIDGE_SECRET`).
-
-## Obavezna konfiguracija
-
-Backend `.env`:
-
-```ini
-LISTENER_BRIDGE_SECRET=<64+ random znakova>   # isti kao u Kortik-Bot/config.env
-LISTENER_BOT_API_URL=http://127.0.0.1:8088
-LISTENER_APP_MANIFEST=listener_app_manifest.json
-LISTENER_UPDATE_SIGNING_KEY=                  # Ed25519 privatni kljuc (samo server/CI)
-KORTIK_OWNER_DISCORD_ID=<tvoj discord id>
-```
-
-`Kortik-Bot/config.env`:
-
-```ini
-LISTENER_BRIDGE_SECRET=<isti secret kao gore>
 ```
 
 ## Status po fazama

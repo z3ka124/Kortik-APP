@@ -23,10 +23,12 @@ class CloudSpeechToText:
         api: Any,
         credentials_provider: Optional[CredentialsProvider] = None,
         language: str = "sr",
+        model: str = "whisper-large-v3-turbo",
     ):
         self.api = api
         self.credentials_provider = credentials_provider
         self.language = language or "sr"
+        self.model = model or "whisper-large-v3-turbo"
 
     def available(self) -> bool:
         return self.api is not None and callable(self.credentials_provider)
@@ -48,6 +50,7 @@ class CloudSpeechToText:
             device_secret=device_secret,
             wav_bytes=wav_bytes,
             language=self.language,
+            model=self.model,
         )
         status = str(result.get("status") or "")
         if status != "success":

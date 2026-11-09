@@ -12,8 +12,26 @@ import os
 import sys
 from pathlib import Path
 
+def _bundled_version() -> str:
+    """Verzija upisana pri buildu (build/build.ps1) — da frozen app prijavi TACNU verziju."""
+    candidates = [Path(__file__).resolve().parent / "_build_version.txt"]
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        candidates += [Path(meipass) / "app" / "_build_version.txt", Path(meipass) / "_build_version.txt"]
+    for candidate in candidates:
+        try:
+            value = candidate.read_text(encoding="utf-8").strip()
+            if value:
+                return value
+        except Exception:
+            continue
+    return ""
+
+
 APP_NAME = "Kortik Listener"
-APP_VERSION = os.getenv("KORTIK_LISTENER_VERSION", "1.0.0")
+APP_VERSION = (
+    os.getenv("KORTIK_LISTENER_VERSION", "").strip() or _bundled_version() or "1.0.0"
+)
 UPDATE_CHANNEL = os.getenv("KORTIK_LISTENER_CHANNEL", "beta")
 PLATFORM = "win-x64"
 

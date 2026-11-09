@@ -51,9 +51,17 @@ print(f"[spec] PROJECT_ROOT = {PROJECT_ROOT}")
 
 datas = []
 binaries = []
-hiddenimports = ["app.main"]
+hiddenimports = [
+    "app.main",
+    "openwakeword",
+    "openwakeword.model",
+    "openwakeword.utils",
+    "openwakeword.vad",
+    "openwakeword.custom_verifier_model",
+    "openwakeword.data",
+]
 
-for package in ("sherpa_onnx", "faster_whisper", "ctranslate2", "aiohttp", "certifi", "_sounddevice_data"):
+for package in ("faster_whisper", "ctranslate2", "onnxruntime", "aiohttp", "certifi", "_sounddevice_data"):
     try:
         pkg_datas, pkg_binaries, pkg_hidden = collect_all(package)
         datas += pkg_datas
@@ -64,47 +72,32 @@ for package in ("sherpa_onnx", "faster_whisper", "ctranslate2", "aiohttp", "cert
 
 icon_path = os.path.join(PROJECT_ROOT, "assets", "icon.ico")
 icon = icon_path if os.path.exists(icon_path) else None
+if icon:
+    # ikonica i u bundle-u (da je app moze postaviti kao window icon)
+    datas.append((icon_path, "assets"))
 
 # ─── Bundled resursi (obavezno za .exe) ─────────────────────────────────────
-# 1) Kalibrisani wake word fajl
-keywords_src = os.path.join(PROJECT_ROOT, "app", "kws", "keywords_kortik.txt")
-if os.path.exists(keywords_src):
-    datas.append((keywords_src, os.path.join("app", "kws")))
-
 # 2) Javni Ed25519 kljuc za update (upisuje ga build/build.ps1)
 pubkey_src = os.path.join(PROJECT_ROOT, "app", "update_pubkey.txt")
 if os.path.exists(pubkey_src):
     datas.append((pubkey_src, "app"))
 
-# 3) Sherpa KWS model (int8, ~5.3 MB) — bez ovoga .exe nema wake word
-MODEL_FILES = (
-    "tokens.txt",
-    "bpe.model",
-    "encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
-    "decoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
-    "joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx",
-)
-model_candidates = [
-    os.environ.get("KORTIK_KWS_MODEL", ""),
-    os.path.join(PROJECT_ROOT, "models", "sherpa-kws"),
-    os.path.join(PROJECT_ROOT, "..", "Kortik-VoiceListener", "models", "sherpa-kws"),
-    os.path.join(os.environ.get("LOCALAPPDATA", ""), "Kortik", "Listener", "models", "sherpa-kws"),
-]
-model_found = False
-for candidate in model_candidates:
-    if not candidate or not os.path.isdir(candidate):
-        continue
-    present = [name for name in MODEL_FILES if os.path.exists(os.path.join(candidate, name))]
-    if len(present) < len(MODEL_FILES):
-        continue
-    for name in MODEL_FILES:
-        datas.append((os.path.join(candidate, name), os.path.join("models", "sherpa-kws")))
-    model_found = True
-    print(f"[spec] Sherpa KWS model ukljucen iz: {candidate}")
-    break
+# 2b) Verzija upisana pri buildu (da frozen app prijavi TACNU verziju)
+buildver_src = os.path.join(PROJECT_ROOT, "app", "_build_version.txt")
+if os.path.exists(buildver_src):
+    datas.append((buildver_src, "app"))
 
-if not model_found:
-    print("[spec] UPOZORENJE: Sherpa KWS model nije pronadjen — .exe nece imati wake word!")
+# 3) OpenWakeWord model (hey_jarvis + melspectrogram + embedding) — bez ovoga nema wake word
+OWW_MODEL_FILES = ("hey_jarvis_v0.1.onnx", "melspectrogram.onnx", "embedding_model.onnx")
+oww_model_dir = os.path.join(PROJECT_ROOT, "models", "openwakeword")
+if os.path.isdir(oww_model_dir) and all(
+    os.path.exists(os.path.join(oww_model_dir, name)) for name in OWW_MODEL_FILES
+):
+    for name in OWW_MODEL_FILES:
+        datas.append((os.path.join(oww_model_dir, name), os.path.join("models", "openwakeword")))
+    print(f"[spec] OpenWakeWord model ukljucen iz: {oww_model_dir}")
+else:
+    print("[spec] UPOZORENJE: OpenWakeWord model nije pronadjen — .exe nece imati wake word!")
 
 a = Analysis(
     [os.path.join(PROJECT_ROOT, "app", "main.py")],
@@ -114,7 +107,7 @@ a = Analysis(
     hiddenimports=hiddenimports,
     hookspath=[],
     runtime_hooks=[],
-    excludes=["tkinter", "matplotlib", "pandas", "scipy", "notebook", "IPython"],
+    excludes=["tkinter", "matplotlib", "pandas", "notebook", "IPython"],
     noarchive=False,
 )
 

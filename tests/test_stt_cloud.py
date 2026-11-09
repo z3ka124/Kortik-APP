@@ -48,9 +48,15 @@ class FakeApi:
         self.text = text
         self.calls = []
 
-    async def transcribe_audio(self, access_token, device_secret, wav_bytes, language="sr"):
+    async def transcribe_audio(self, access_token, device_secret, wav_bytes, language="sr", model="whisper-large-v3-turbo"):
         self.calls.append(
-            {"token": access_token, "secret": device_secret, "size": len(wav_bytes), "language": language}
+            {
+                "token": access_token,
+                "secret": device_secret,
+                "size": len(wav_bytes),
+                "language": language,
+                "model": model,
+            }
         )
         return {"status": self.status, "text": self.text}
 
@@ -75,7 +81,23 @@ class CloudSttTests(unittest.TestCase):
         self.assertEqual(len(api.calls), 1)
         self.assertEqual(api.calls[0]["token"], "token-123")
         self.assertEqual(api.calls[0]["secret"], "secret-456")
+        self.assertEqual(api.calls[0]["model"], "whisper-large-v3-turbo")
         self.assertGreater(api.calls[0]["size"], 44)  # WAV header + audio
+
+    def test_cloud_model_selection(self):
+        api = FakeApi()
+
+        async def credentials():
+            return ("token-123", "secret-456")
+
+        engine = CloudSpeechToText(
+            api=api,
+            credentials_provider=credentials,
+            language="sr",
+            model="whisper-large-v3",
+        )
+        asyncio.run(engine.transcribe_async(chunk(1000) * 20))
+        self.assertEqual(api.calls[0]["model"], "whisper-large-v3")
 
     def test_async_transcribe_error_status_returns_empty(self):
         engine = self._engine(FakeApi(status="error", text="x"))

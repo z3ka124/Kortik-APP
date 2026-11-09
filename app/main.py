@@ -62,6 +62,17 @@ def main() -> int:
     app.setApplicationVersion(APP_VERSION)
     app.setQuitOnLastWindowClosed(True)
 
+    # Ikonica prozora/taskbara (source i frozen)
+    try:
+        from PySide6.QtGui import QIcon
+
+        base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
+        icon_path = base / "assets" / "icon.ico"
+        if icon_path.exists():
+            app.setWindowIcon(QIcon(str(icon_path)))
+    except Exception as exc:
+        logger.debug("Ikonica nije učitana: %s", exc)
+
     server_name = "kortik-listener-single-instance"
     probe = QLocalSocket()
     probe.connectToServer(server_name)

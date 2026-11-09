@@ -16,8 +16,6 @@ import unicodedata
 from typing import Iterable, Optional, Tuple
 
 WAKE_WORDS: Tuple[str, ...] = (
-    "hej kortik", "hey kortik", "hej kortik", "ej kortik",
-    "kortik", "kortiku", "kortik.",
     "hej jarvis", "hey jarvis", "jarvis",
 )
 
@@ -36,6 +34,12 @@ VOLUME_WORDS = {
 PLAY_WORDS = {
     "play", "pusti", "pustaj", "sviraj", "dodaj", "opali", "daj", "ukljuci", "reprodukuj",
     "pokreni", "zapocni",
+}
+AUTOPLAY_WORDS = {"autoplay", "auto plej", "autoplej", "auto play"}
+AUTOPLAY_ON_WORDS = {"on", "ukljuci", "upali", "paljenje", "start", "da", "enabled", "ukljucivanje"}
+AUTOPLAY_OFF_WORDS = {
+    "off", "iskljuci", "ugasi", "gasi", "prekini", "stop", "ne", "disabled",
+    "iskljucivanje", "gasenje",
 }
 
 _NUMBER_WORDS = {
@@ -64,7 +68,7 @@ _NUMBER_WORDS = {
 
 _FILLER_WORDS = {
     "molim", "te", "molimte", "bi", "hocu", "zelim", "ajde", "hajde", "sada", "sad",
-    "bre", "brate", "kortik", "mi", "nam", "vam", "moze", "mozes",
+    "bre", "brate", "mi", "nam", "vam", "moze", "mozes",
 }
 
 
@@ -96,6 +100,17 @@ def is_wake_word_only(text: str) -> bool:
     return had and not remainder
 
 
+def has_wake_word(text: str) -> bool:
+    """Da li tekst sadrzi wake word."""
+    _, had = strip_wake_word(text)
+    return had
+
+
+def split_wake_word(text: str) -> Tuple[bool, str]:
+    """Vrati (ima_wake_word, ostatak_teksta bez wake word-a)."""
+    return strip_wake_word(text)
+
+
 def _extract_number(tokens: Iterable[str], raw: str) -> Optional[int]:
     for token in tokens:
         if token.isdigit():
@@ -103,7 +118,7 @@ def _extract_number(tokens: Iterable[str], raw: str) -> Optional[int]:
                 value = int(token)
             except ValueError:
                 continue
-            if 0 <= value <= 200:
+            if 1 <= value <= 200:
                 return value
     for token in tokens:
         if token in _NUMBER_WORDS:
@@ -132,6 +147,17 @@ def _match_phrase(tokens: list) -> Optional[str]:
     return None
 
 
+def _autoplay_mode(tokens: list) -> Optional[str]:
+    """Vraca 'on'/'off' ako postoji eksplicitna namera, inace None."""
+    for token in tokens:
+        if token in AUTOPLAY_ON_WORDS:
+            return "on"
+    for token in tokens:
+        if token in AUTOPLAY_OFF_WORDS:
+            return "off"
+    return None
+
+
 def parse_command(text: str) -> Optional[Tuple[str, str]]:
     """
     Vraca (command, query) ili None ako tekst nije komanda.
@@ -148,12 +174,25 @@ def parse_command(text: str) -> Optional[Tuple[str, str]]:
         return None
 
     tokens = remainder.split()
+
+    # Autoplay on/off prepoznajemo PRE ostalih glagola — jer npr. „uključi autoplay"
+    # inače uhvati "ukljuci" kao play. Gledamo ceo ostatak (npr. "auto play" je dve reci).
+    # Zahtevamo eksplicitno on/off.
+    if any(w in remainder for w in AUTOPLAY_WORDS):
+        mode = _autoplay_mode(tokens)
+        if mode:
+            return ("autoplay", mode)
+
     command = _match_phrase(tokens)
 
     if command == "volume":
         value = _extract_number(tokens, remainder)
         if value is not None:
             return ("volume", str(value))
+        # Ako je eksplicitno izgovoren broj ali van opsega 1..200 (npr. "0", "201",
+        # "zero") — odbij, umesto da ga tretiramo kao "pojačaj".
+        if any(t.isdigit() or t in _NUMBER_WORDS for t in tokens):
+            return None
         if any(w in remainder for w in ("smanji", "utisaj", "down", "dole")):
             return ("volume", "-15")
         return ("volume", "+15")

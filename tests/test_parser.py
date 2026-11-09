@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Parser komandi — mora da razume i srpske i engleske varijante."""
+"""Parser komandi — wake word je „Hey Jarvis"; razume srpske i engleske komande."""
 import sys
 import unittest
 from pathlib import Path
@@ -18,7 +18,10 @@ from app.core.parser import (  # noqa: E402
 
 class NormalizeTests(unittest.TestCase):
     def test_diacritics_and_case(self):
-        self.assertEqual(normalize("Kortik  PUSTI  Senidah, bez tebe!"), "kortik pusti senidah bez tebe")
+        self.assertEqual(
+            normalize("Hey Jarvis  PUSTI  Senidah, bez tebe!"),
+            "hey jarvis pusti senidah bez tebe",
+        )
 
     def test_empty(self):
         self.assertEqual(normalize(""), "")
@@ -27,63 +30,94 @@ class NormalizeTests(unittest.TestCase):
 
 class WakeWordTests(unittest.TestCase):
     def test_strip_variants(self):
-        for phrase in ("Kortik pusti x", "kortik pusti x", "HEJ KORTIK pusti x", "Hej Kortik pusti x"):
+        for phrase in ("Hey Jarvis pusti x", "hey jarvis pusti x", "HEJ JARVIS pusti x", "jarvis pusti x"):
             remainder, had = strip_wake_word(phrase)
             self.assertTrue(had, phrase)
             self.assertEqual(remainder, "pusti x")
 
     def test_wake_word_only(self):
-        self.assertTrue(is_wake_word_only("Kortik"))
-        self.assertTrue(is_wake_word_only("Hej Kortik"))
-        self.assertFalse(is_wake_word_only("Kortik pusti x"))
+        self.assertTrue(is_wake_word_only("Hey Jarvis"))
+        self.assertTrue(is_wake_word_only("jarvis"))
+        self.assertFalse(is_wake_word_only("Hey Jarvis pusti x"))
         self.assertFalse(is_wake_word_only("kako si"))
+
+    def test_kortik_is_no_longer_a_wake_word(self):
+        for phrase in ("kortik pusti x", "Kortik pusti x", "hej kortik pusti x", "Kortik"):
+            _, had = strip_wake_word(phrase)
+            self.assertFalse(had, phrase)
 
 
 class ParseCommandTests(unittest.TestCase):
     def test_play_serbian(self):
-        self.assertEqual(parse_command("Kortik pusti Senidah bez tebe"), ("play", "senidah bez tebe"))
+        self.assertEqual(parse_command("Hey Jarvis pusti Senidah bez tebe"), ("play", "senidah bez tebe"))
 
     def test_play_english(self):
-        self.assertEqual(parse_command("Kortik play vidi je"), ("play", "vidi je"))
+        self.assertEqual(parse_command("Hey Jarvis play vidi je"), ("play", "vidi je"))
 
     def test_play_without_wake_word(self):
         self.assertEqual(parse_command("pusti senidah"), ("play", "senidah"))
 
     def test_play_implicit_song_name(self):
-        self.assertEqual(parse_command("Kortik senidah bez tebe"), ("play", "senidah bez tebe"))
+        self.assertEqual(parse_command("Hey Jarvis senidah bez tebe"), ("play", "senidah bez tebe"))
 
     def test_skip(self):
-        for phrase in ("Kortik skip", "Kortik preskoči", "Kortik dalje", "Kortik sledeća"):
+        for phrase in ("Hey Jarvis skip", "Hey Jarvis preskoči", "Hey Jarvis dalje", "Hey Jarvis sledeća"):
             self.assertEqual(parse_command(phrase), ("skip", ""), phrase)
 
     def test_stop(self):
-        for phrase in ("Kortik stop", "Kortik stani", "Kortik ugasi", "Kortik prekini"):
+        for phrase in ("Hey Jarvis stop", "Hey Jarvis stani", "Hey Jarvis ugasi", "Hey Jarvis prekini"):
             self.assertEqual(parse_command(phrase), ("stop", ""), phrase)
 
     def test_pause_and_resume(self):
-        self.assertEqual(parse_command("Kortik pauza"), ("pause", ""))
-        self.assertEqual(parse_command("Kortik pauziraj"), ("pause", ""))
-        self.assertEqual(parse_command("Kortik nastavi"), ("resume", ""))
-        self.assertEqual(parse_command("Kortik pusti dalje"), ("resume", ""))
+        self.assertEqual(parse_command("Hey Jarvis pauza"), ("pause", ""))
+        self.assertEqual(parse_command("Hey Jarvis pauziraj"), ("pause", ""))
+        self.assertEqual(parse_command("Hey Jarvis nastavi"), ("resume", ""))
+        self.assertEqual(parse_command("Hey Jarvis pusti dalje"), ("resume", ""))
 
     def test_volume_absolute(self):
-        self.assertEqual(parse_command("Kortik glasnoća 80"), ("volume", "80"))
-        self.assertEqual(parse_command("Kortik volume 55"), ("volume", "55"))
-        self.assertEqual(parse_command("Kortik volume fifty"), ("volume", "50"))
+        self.assertEqual(parse_command("Hey Jarvis glasnoća 80"), ("volume", "80"))
+        self.assertEqual(parse_command("Hey Jarvis volume 55"), ("volume", "55"))
+        self.assertEqual(parse_command("Hey Jarvis volume fifty"), ("volume", "50"))
+        self.assertEqual(parse_command("Hey Jarvis volume 200"), ("volume", "200"))
+
+    def test_volume_out_of_range_rejected(self):
+        self.assertIsNone(parse_command("Hey Jarvis volume 0"))
+        self.assertIsNone(parse_command("Hey Jarvis glasnoća 201"))
 
     def test_volume_relative(self):
-        self.assertEqual(parse_command("Kortik pojačaj"), ("volume", "+15"))
-        self.assertEqual(parse_command("Kortik smanji"), ("volume", "-15"))
-        self.assertEqual(parse_command("Kortik utišaj"), ("volume", "-15"))
+        self.assertEqual(parse_command("Hey Jarvis pojačaj"), ("volume", "+15"))
+        self.assertEqual(parse_command("Hey Jarvis smanji"), ("volume", "-15"))
+        self.assertEqual(parse_command("Hey Jarvis utišaj"), ("volume", "-15"))
 
     def test_not_a_command(self):
         self.assertIsNone(parse_command("kako si"))
-        self.assertIsNone(parse_command("Kortik"))
+        self.assertIsNone(parse_command("Hey Jarvis"))
         self.assertIsNone(parse_command(""))
-        self.assertIsNone(parse_command("Kortik pusti"))
+        self.assertIsNone(parse_command("Hey Jarvis pusti"))
+        # „kortik" više nije wake word
+        self.assertIsNone(parse_command("kortik pusti senidah"))
 
     def test_fillers_are_removed(self):
-        self.assertEqual(parse_command("Kortik pusti mi molim te senidah"), ("play", "senidah"))
+        self.assertEqual(parse_command("Hey Jarvis pusti mi molim te senidah"), ("play", "senidah"))
+
+
+class AutoplayCommandTests(unittest.TestCase):
+    def test_autoplay_on(self):
+        for phrase in ("Hey Jarvis autoplay on", "Hey Jarvis auto play on", "Hey Jarvis autoplej on"):
+            self.assertEqual(parse_command(phrase), ("autoplay", "on"), phrase)
+
+    def test_autoplay_off(self):
+        for phrase in ("Hey Jarvis autoplay off", "Hey Jarvis autoplej off"):
+            self.assertEqual(parse_command(phrase), ("autoplay", "off"), phrase)
+
+    def test_autoplay_serbian(self):
+        self.assertEqual(parse_command("Hey Jarvis uključi autoplay"), ("autoplay", "on"))
+        self.assertEqual(parse_command("Hey Jarvis isključi autoplay"), ("autoplay", "off"))
+        self.assertEqual(parse_command("Hey Jarvis ugasi autoplay"), ("autoplay", "off"))
+
+    def test_autoplay_without_mode_requires_explicit(self):
+        # samo "autoplay" bez on/off = nije komanda (zahteva eksplicitno)
+        self.assertIsNone(parse_command("Hey Jarvis autoplay"))
 
 
 if __name__ == "__main__":

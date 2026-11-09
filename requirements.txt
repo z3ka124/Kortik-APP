@@ -16,10 +16,12 @@ cryptography>=42.0
 numpy>=1.24
 sounddevice>=0.4.6
 webrtcvad-wheels>=2.0.14
-# Sherpa-ONNX KWS (model za "Kortik" je vec u Kortik-VoiceListener/models/sherpa-kws)
-sherpa-onnx>=1.10
+# OpenWakeWord akusticki wake word (model "hey_jarvis" je bundled u models/openwakeword)
+openwakeword>=0.6.0
 # Lokalni STT (hibrid: local po defaultu, cloud kao opcija)
-faster-whisper>=1.0
+# faster-whisper (zakljucano <1.3: 1.2.x je stabilno; novije zna da promeni
+# API oko PyAV/numpy pa se ne zelimo iznenaditi preko noci)
+faster-whisper>=1.0,<1.3
 
 # Tray ikonica (M3 faza)
 pystray>=0.19
