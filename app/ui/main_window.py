@@ -29,6 +29,7 @@ from PySide6.QtWidgets import (
 from app.auth.device_flow import DeviceFlow
 from app.config import AppPaths, Settings, save_settings
 from app.core.parser import parse_command
+from app.i18n import i18n, tr, SUPPORTED_LANGUAGES
 from app.net.api import ApiError, ListenerApi
 from app.security.storage import SecretStore
 from app.ui.async_runner import AsyncRunner
@@ -98,6 +99,10 @@ class MainWindow(QMainWindow):
         self.flow = flow
         self.runner = runner
         self.logger = logger
+
+        # Inicijalizacija i18n
+        i18n.set_language(getattr(self.settings, "language", "sr") or "sr")
+        i18n.language_changed.connect(self._retranslate_ui)
 
         self.access_token: Optional[str] = None
         self.token_expires_at: float = 0.0
@@ -263,43 +268,44 @@ class MainWindow(QMainWindow):
         layout.setContentsMargins(40, 34, 40, 34)
         layout.setSpacing(12)
 
-        title = QLabel(APP_NAME)
-        title.setObjectName("title")
-        subtitle = QLabel(
+        self.conn_title = QLabel(APP_NAME)
+        self.conn_title.setObjectName("title")
+        self.conn_subtitle = QLabel(
             "Upari ovaj računar sa svojim Discord nalogom. Wake word i prepoznavanje "
             "komandi rade lokalno — audio ne napušta tvoj PC."
         )
-        subtitle.setWordWrap(True)
-        subtitle.setObjectName("subtitle")
-        layout.addWidget(title)
-        layout.addWidget(subtitle)
+        self.conn_subtitle.setWordWrap(True)
+        self.conn_subtitle.setObjectName("subtitle")
+        layout.addWidget(self.conn_title)
+        layout.addWidget(self.conn_subtitle)
 
         form = QFormLayout()
+        self.device_name_label = QLabel(tr("device_name_label"))
         self.device_name_edit = QLineEdit()
-        self.device_name_edit.setPlaceholderText("npr. Ivanov PC")
-        form.addRow("Ime uređaja", self.device_name_edit)
+        self.device_name_edit.setPlaceholderText(tr("device_name_placeholder"))
+        form.addRow(self.device_name_label, self.device_name_edit)
         layout.addLayout(form)
 
-        self.pair_btn = QPushButton("Upari uređaj")
+        self.pair_btn = QPushButton(tr("pair_device_btn"))
         self.pair_btn.clicked.connect(self._start_pairing)
         layout.addWidget(self.pair_btn)
 
-        box = QGroupBox("Potvrdi kod na dashboardu")
-        box_layout = QVBoxLayout(box)
+        self.connect_box = QGroupBox(tr("pairing_box_title"))
+        box_layout = QVBoxLayout(self.connect_box)
         self.code_label = QLabel("——————")
         self.code_label.setObjectName("code")
         self.code_label.setAlignment(Qt.AlignCenter)
         box_layout.addWidget(self.code_label)
-        self.code_hint = QLabel("Klikni „Upari uređaj“ da dobiješ kod.")
+        self.code_hint = QLabel(tr("pairing_hint"))
         self.code_hint.setObjectName("subtitle")
         self.code_hint.setWordWrap(True)
         box_layout.addWidget(self.code_hint)
-        self.open_dash_btn = QPushButton("Otvori dashboard")
+        self.open_dash_btn = QPushButton(tr("open_dashboard_btn"))
         self.open_dash_btn.setObjectName("ghost")
         self.open_dash_btn.setEnabled(False)
         self.open_dash_btn.clicked.connect(self._open_verification_uri)
         box_layout.addWidget(self.open_dash_btn)
-        layout.addWidget(box)
+        layout.addWidget(self.connect_box)
 
         self.conn_status = QLabel("")
         self.conn_status.setWordWrap(True)
@@ -398,22 +404,22 @@ class MainWindow(QMainWindow):
         self.user_label.setObjectName("subtitle")
         layout.addWidget(self.user_label)
 
-        status_box = QGroupBox("Status")
-        status_layout = QVBoxLayout(status_box)
-        self.bot_label = QLabel("Bot: —")
-        self.vc_label = QLabel("VC: —")
-        self.busy_label = QLabel("Zauzetost: —")
-        self.plugin_label = QLabel("Plugin: —")
-        self.voice_label = QLabel("Slušanje: isključeno")
+        self.status_box = QGroupBox(tr("status_box_title"))
+        status_layout = QVBoxLayout(self.status_box)
+        self.bot_label = QLabel(tr("bot_offline"))
+        self.vc_label = QLabel(tr("vc_not_in"))
+        self.busy_label = QLabel(tr("busy_free"))
+        self.plugin_label = QLabel(tr("plugin_unknown"))
+        self.voice_label = QLabel(tr("listening_stopped"))
         for widget in (self.bot_label, self.vc_label, self.busy_label, self.plugin_label, self.voice_label):
             status_layout.addWidget(widget)
-        layout.addWidget(status_box)
+        layout.addWidget(self.status_box)
 
         listen_row = QHBoxLayout()
-        self.listen_check = QCheckBox("Slušam wake word „Hey Jarvis“")
+        self.listen_check = QCheckBox(tr("listen_wake_checkbox"))
         self.listen_check.setChecked(False)
         self.listen_check.stateChanged.connect(self._on_listen_toggle)
-        self.listen_btn = QPushButton("Uključi slušanje")
+        self.listen_btn = QPushButton(tr("listen_btn_start"))
         self.listen_btn.setObjectName("ghost")
         self.listen_btn.clicked.connect(self._toggle_listen_button)
         listen_row.addWidget(self.listen_check)
@@ -424,18 +430,18 @@ class MainWindow(QMainWindow):
         self.listen_level.setTextVisible(False)
         self.listen_level.setFixedHeight(8)
         self.listen_level.setFixedWidth(120)
-        self.listen_level.setToolTip("Nivo mikrofona dok slušam")
+        self.listen_level.setToolTip(tr("listen_mic_level_tooltip"))
         listen_row.addWidget(self.listen_level)
         listen_row.addStretch(1)
         layout.addLayout(listen_row)
 
-        cmd_box = QGroupBox("Test komanda")
-        cmd_layout = QVBoxLayout(cmd_box)
+        self.cmd_box = QGroupBox(tr("test_cmd_box"))
+        cmd_layout = QVBoxLayout(self.cmd_box)
         cmd_row = QHBoxLayout()
         self.command_edit = QLineEdit()
-        self.command_edit.setPlaceholderText('npr. "pusti senidah bez tebe" ili "skip"')
+        self.command_edit.setPlaceholderText(tr("test_cmd_placeholder"))
         self.command_edit.returnPressed.connect(self._send_command)
-        self.send_btn = QPushButton("Pošalji")
+        self.send_btn = QPushButton(tr("send_btn"))
         self.send_btn.clicked.connect(self._send_command)
         cmd_row.addWidget(self.command_edit, 1)
         cmd_row.addWidget(self.send_btn)
@@ -443,28 +449,29 @@ class MainWindow(QMainWindow):
         self.command_status = QLabel("")
         self.command_status.setWordWrap(True)
         cmd_layout.addWidget(self.command_status)
-        layout.addWidget(cmd_box)
+        layout.addWidget(self.cmd_box)
 
-        settings_box = QGroupBox("Podešavanja")
-        form = QFormLayout(settings_box)
+        self.settings_box = QGroupBox(tr("settings_box_title"))
+        form = QFormLayout(self.settings_box)
         mic_row = QHBoxLayout()
         self.mic_combo = QComboBox()
         mic_row.addWidget(self.mic_combo, 1)
         mic_refresh = QPushButton("↻")
         mic_refresh.setObjectName("ghost")
         mic_refresh.setFixedWidth(38)
-        mic_refresh.setToolTip("Osveži listu mikrofona")
+        mic_refresh.setToolTip(tr("mic_refresh_tooltip"))
         mic_refresh.clicked.connect(self._reload_mics)
         mic_row.addWidget(mic_refresh)
         mic_scan = QPushButton("🔍")
         mic_scan.setObjectName("ghost")
         mic_scan.setFixedWidth(38)
-        mic_scan.setToolTip("Skeniraj sve mikrofone i pokaži gde ima signala")
+        mic_scan.setToolTip(tr("mic_scan_tooltip"))
         mic_scan.clicked.connect(self._scan_mics)
         mic_row.addWidget(mic_scan)
-        form.addRow("Mikrofon", mic_row)
+        self.mic_label = QLabel(tr("mic_label"))
+        form.addRow(self.mic_label, mic_row)
 
-        self.mic_test_btn = QPushButton("Test mikrofona (4 s)")
+        self.mic_test_btn = QPushButton(tr("mic_test_btn"))
         self.mic_test_btn.setObjectName("ghost")
         self.mic_test_btn.clicked.connect(self._test_mic)
         self.mic_level = QProgressBar()
@@ -480,7 +487,8 @@ class MainWindow(QMainWindow):
         self.stt_combo.addItems(["local", "cloud"])
         self.stt_combo.setCurrentText(self.settings.stt_mode)
         self.stt_combo.currentTextChanged.connect(self._on_stt_mode_changed)
-        form.addRow("STT režim", self.stt_combo)
+        self.stt_mode_label = QLabel(tr("stt_mode_label"))
+        form.addRow(self.stt_mode_label, self.stt_combo)
         self.model_size_combo = QComboBox()
         self.model_size_combo.addItems(["small", "base", "tiny"])
         self.model_size_combo.setCurrentText(getattr(self.settings, "stt_model_size", "small"))
@@ -489,7 +497,7 @@ class MainWindow(QMainWindow):
             "base = kompromis (~74 MB)\n"
             "tiny = najmanje RAM-a (~39 MB), slabija tačnost"
         )
-        self.model_size_label = QLabel("STT model size (lokalno)")
+        self.model_size_label = QLabel(tr("model_size_label"))
         form.addRow(self.model_size_label, self.model_size_combo)
         self.cloud_model_combo = QComboBox()
         self.cloud_model_combo.addItem("Large Turbo (brži)", "whisper-large-v3-turbo")
@@ -503,39 +511,37 @@ class MainWindow(QMainWindow):
             "Large Turbo = brži, skoro isto tačan.\n"
             "Large = najtačniji, malo sporiji."
         )
-        self.cloud_model_label = QLabel("Cloud model")
+        self.cloud_model_label = QLabel(tr("cloud_model_label"))
         form.addRow(self.cloud_model_label, self.cloud_model_combo)
+
         self.lang_combo = QComboBox()
-        self.lang_combo.addItems(_LANGUAGE_CHOICES)
-        lang_index = self.lang_combo.findText(self.settings.language)
-        if lang_index >= 0:
-            self.lang_combo.setCurrentIndex(lang_index)
+        for code, name in SUPPORTED_LANGUAGES.items():
+            self.lang_combo.addItem(f"{name} ({code})", code)
+        lang_idx = self.lang_combo.findData(self.settings.language)
+        if lang_idx >= 0:
+            self.lang_combo.setCurrentIndex(lang_idx)
         else:
-            self.lang_combo.addItem(self.settings.language)
+            self.lang_combo.addItem(self.settings.language, self.settings.language)
             self.lang_combo.setCurrentIndex(self.lang_combo.count() - 1)
-        self.lang_combo.setToolTip(
-            "Jezik u kom pričaš komande (auto = sam prepozna). "
-            "Za srpski ostavi 'sr' — tako Whisper najbolje prepoznaje."
-        )
-        form.addRow("Jezik komandi", self.lang_combo)
+        self.lang_combo.setToolTip(tr("lang_tooltip"))
+        self.lang_combo.currentIndexChanged.connect(self._on_lang_changed)
+        self.lang_label = QLabel(tr("lang_label"))
+        form.addRow(self.lang_label, self.lang_combo)
+
         self.sens_slider = QSlider(Qt.Horizontal)
         self.sens_slider.setRange(0, 100)
         self.sens_slider.setValue(int(round(self.settings.sensitivity * 100)))
-        self.sens_slider.setToolTip(
-            "Osetljivost wake word-a: levo = strože (manje lažnih poziva), desno = osetljivije"
-        )
-        form.addRow("Osetljivost wake word-a", self.sens_slider)
+        self.sens_slider.setToolTip(tr("sens_tooltip"))
+        self.sens_label = QLabel(tr("sens_label"))
+        form.addRow(self.sens_label, self.sens_slider)
+
         self.trigger_key_edit = QLineEdit()
         self.trigger_key_edit.setText(getattr(self.settings, "trigger_key", "") or "")
-        self.trigger_key_edit.setPlaceholderText('npr. K, F9 ili CTRL+K (prazno = isključeno)')
-        self.trigger_key_edit.setToolTip(
-            "Globalni taster (radi i kad je aplikacija u pozadini).\n"
-            "Push-to-talk: drži taster da bi snimala, pusti da stane.\n"
-            "Toggle: jedan pritisak uključi, drugi isključi."
-        )
+        self.trigger_key_edit.setPlaceholderText(tr("trigger_key_placeholder"))
+        self.trigger_key_edit.setToolTip(tr("trigger_key_tooltip"))
         self.trigger_mode_combo = QComboBox()
-        self.trigger_mode_combo.addItem("Push-to-talk (drži)", "push_to_talk")
-        self.trigger_mode_combo.addItem("Toggle (uključi/isključi)", "toggle")
+        self.trigger_mode_combo.addItem(tr("trigger_mode_ptt"), "push_to_talk")
+        self.trigger_mode_combo.addItem(tr("trigger_mode_toggle"), "toggle")
         mode_idx = self.trigger_mode_combo.findData(
             getattr(self.settings, "trigger_mode", "push_to_talk") or "push_to_talk"
         )
@@ -544,42 +550,109 @@ class MainWindow(QMainWindow):
         trigger_row = QHBoxLayout()
         trigger_row.addWidget(self.trigger_key_edit, 1)
         trigger_row.addWidget(self.trigger_mode_combo)
-        form.addRow("Trigger taster (PTT)", trigger_row)
-        self.sound_check = QCheckBox("Zvučni efekti (wake + komanda)")
+        self.trigger_label = QLabel(tr("trigger_key_label"))
+        form.addRow(self.trigger_label, trigger_row)
+
+        self.sound_check = QCheckBox(tr("sound_effects_label"))
         self.sound_check.setChecked(getattr(self.settings, "sound_effects", True))
         form.addRow("", self.sound_check)
-        self.only_vc_check = QCheckBox("Slušaj samo dok sam u voice kanalu")
+        self.only_vc_check = QCheckBox(tr("listen_only_vc_label"))
         self.only_vc_check.setChecked(self.settings.listen_only_in_voice)
         form.addRow("", self.only_vc_check)
-        self.autostart_check = QCheckBox("Pokreni sa Windows-om")
+        self.autostart_check = QCheckBox(tr("autostart_label"))
         self.autostart_check.setChecked(self.settings.autostart)
         form.addRow("", self.autostart_check)
-        save_btn = QPushButton("Sačuvaj podešavanja")
-        save_btn.setObjectName("ghost")
-        save_btn.clicked.connect(self._save_settings_ui)
-        form.addRow("", save_btn)
-        layout.addWidget(settings_box)
+        self.save_btn = QPushButton(tr("save_settings_btn"))
+        self.save_btn.setObjectName("ghost")
+        self.save_btn.clicked.connect(self._save_settings_ui)
+        form.addRow("", self.save_btn)
+        layout.addWidget(self.settings_box)
 
-        self.update_label = QLabel("Provera ažuriranja…")
+        self.update_label = QLabel(tr("checking_updates"))
         self.update_label.setWordWrap(True)
         layout.addWidget(self.update_label)
 
         footer = QHBoxLayout()
-        dash_btn = QPushButton("Otvori dashboard")
-        dash_btn.setObjectName("ghost")
-        dash_btn.clicked.connect(self._open_dashboard)
-        unlink_btn = QPushButton("Odjavi uređaj")
-        unlink_btn.setObjectName("ghost")
-        unlink_btn.clicked.connect(self._unlink_device)
-        footer.addWidget(dash_btn)
+        self.dash_btn = QPushButton(tr("open_dashboard_btn"))
+        self.dash_btn.setObjectName("ghost")
+        self.dash_btn.clicked.connect(self._open_dashboard)
+        self.unlink_btn = QPushButton(tr("unlink_device_btn"))
+        self.unlink_btn.setObjectName("ghost")
+        self.unlink_btn.clicked.connect(self._unlink_device)
+        footer.addWidget(self.dash_btn)
         footer.addStretch(1)
-        footer.addWidget(unlink_btn)
+        footer.addWidget(self.unlink_btn)
         layout.addLayout(footer)
 
         self.dashboard_page = page
         self._on_stt_mode_changed(self.stt_combo.currentText())
         self._reload_mics()
         return page
+
+    def _on_lang_changed(self, index: int) -> None:
+        code = self.lang_combo.itemData(index) or self.lang_combo.currentText()
+        if code and code != self.settings.language:
+            self.settings.language = code
+            save_settings(self.paths, self.settings)
+            i18n.set_language(code)
+            self.logger.info("Jezik promenjen: %s", code)
+
+    def _retranslate_ui(self, _lang: Optional[str] = None) -> None:
+        self.setWindowTitle(f"{tr('app_title')} {APP_VERSION}")
+
+        # Connect page
+        if hasattr(self, "device_name_label"):
+            self.device_name_label.setText(tr("device_name_label"))
+            self.device_name_edit.setPlaceholderText(tr("device_name_placeholder"))
+            self.pair_btn.setText(tr("pair_device_btn"))
+            self.connect_box.setTitle(tr("pairing_box_title"))
+            self.open_dash_btn.setText(tr("open_dashboard_btn"))
+            if not self.pair_btn.isEnabled():
+                self.code_hint.setText(tr("pairing_waiting"))
+            else:
+                self.code_hint.setText(tr("pairing_hint"))
+
+        # Dashboard page
+        if hasattr(self, "status_box"):
+            self.status_box.setTitle(tr("status_box_title"))
+            self.cmd_box.setTitle(tr("test_cmd_box"))
+            self.settings_box.setTitle(tr("settings_box_title"))
+            self.command_edit.setPlaceholderText(tr("test_cmd_placeholder"))
+            self.send_btn.setText(tr("send_btn"))
+            self.listen_check.setText(tr("listen_wake_checkbox"))
+            self.listen_btn.setText(tr("listen_btn_stop") if self.listener_service else tr("listen_btn_start"))
+            self.listen_level.setToolTip(tr("listen_mic_level_tooltip"))
+            self.mic_label.setText(tr("mic_label"))
+            self.mic_test_btn.setText(tr("mic_test_btn"))
+            self.stt_mode_label.setText(tr("stt_mode_label"))
+            self.model_size_label.setText(tr("model_size_label"))
+            self.cloud_model_label.setText(tr("cloud_model_label"))
+            self.lang_label.setText(tr("lang_label"))
+            self.lang_combo.setToolTip(tr("lang_tooltip"))
+            self.sens_label.setText(tr("sens_label"))
+            self.sens_slider.setToolTip(tr("sens_tooltip"))
+            self.trigger_label.setText(tr("trigger_key_label"))
+            self.trigger_key_edit.setPlaceholderText(tr("trigger_key_placeholder"))
+            self.trigger_key_edit.setToolTip(tr("trigger_key_tooltip"))
+            self.sound_check.setText(tr("sound_effects_label"))
+            self.only_vc_check.setText(tr("listen_only_vc_label"))
+            self.autostart_check.setText(tr("autostart_label"))
+            self.save_btn.setText(tr("save_settings_btn"))
+            self.dash_btn.setText(tr("open_dashboard_btn"))
+            self.unlink_btn.setText(tr("unlink_device_btn"))
+
+            curr_mode = self.trigger_mode_combo.currentData()
+            self.trigger_mode_combo.blockSignals(True)
+            self.trigger_mode_combo.clear()
+            self.trigger_mode_combo.addItem(tr("trigger_mode_ptt"), "push_to_talk")
+            self.trigger_mode_combo.addItem(tr("trigger_mode_toggle"), "toggle")
+            idx = self.trigger_mode_combo.findData(curr_mode)
+            if idx >= 0:
+                self.trigger_mode_combo.setCurrentIndex(idx)
+            self.trigger_mode_combo.blockSignals(False)
+
+            if self.last_heartbeat:
+                self._on_heartbeat(self.last_heartbeat)
 
     def _on_stt_mode_changed(self, mode: str) -> None:
         """Prikazi odgovarajuci dropdown (local -> model size, cloud -> Groq model)."""
@@ -593,10 +666,11 @@ class MainWindow(QMainWindow):
 
     # ── Slots ───────────────────────────────────────────────────────────────
     def _on_heartbeat(self, data: dict) -> None:
+        self.last_heartbeat = data
         bot_online = data.get("bot_online")
         self._set_status(
             self.bot_label,
-            "Bot: online" if bot_online else "Bot: offline",
+            tr("bot_online") if bot_online else tr("bot_offline"),
             "ok" if bot_online else "err",
         )
 
@@ -604,62 +678,61 @@ class MainWindow(QMainWindow):
         if in_voice:
             channel = data.get("channel_name") or data.get("channel_id")
             guild = data.get("guild_id")
-            self._set_status(self.vc_label, f"VC: {channel}  (server {guild})", "ok")
+            self._set_status(self.vc_label, tr("vc_in", channel=channel, guild=guild), "ok")
         else:
-            self._set_status(self.vc_label, "VC: nisi u glasovnom kanalu", "warn")
+            self._set_status(self.vc_label, tr("vc_not_in"), "warn")
 
         busy = data.get("busy")
         self._set_status(
             self.busy_label,
-            "Zauzetost: bot svira u drugom kanalu" if busy else "Zauzetost: bot je slobodan",
+            tr("busy_other_vc") if busy else tr("busy_free"),
             "warn" if busy else "ok",
         )
 
         plugin = data.get("plugin_enabled")
         if plugin is None:
-            self._set_status(self.plugin_label, "Plugin: nepoznato", "warn")
+            self._set_status(self.plugin_label, tr("plugin_unknown"), "warn")
         else:
             self._set_status(
                 self.plugin_label,
-                "Plugin: uključen" if plugin else "Plugin: isključen na serveru",
+                tr("plugin_active") if plugin else tr("plugin_disabled"),
                 "ok" if plugin else "warn",
             )
 
-        # Ne diramo korisnikovu odluku — samo prikazujemo stanje i razlog
         if self.listener_service is not None:
-            self._set_status(self.voice_label, "🎙️ Slušam — čekam „Hey Jarvis“", "ok")
-            self.listen_btn.setText("Zaustavi slušanje")
+            self._set_status(self.voice_label, tr("listening_active"), "ok")
+            self.listen_btn.setText(tr("listen_btn_stop"))
         elif self.settings.listen_only_in_voice and not in_voice:
-            self._set_status(self.voice_label, "⏸️ Slušanje isključeno · nisi u voice kanalu", "warn")
-            self.listen_btn.setText("Uključi slušanje")
+            self._set_status(self.voice_label, tr("listening_not_in_vc"), "warn")
+            self.listen_btn.setText(tr("listen_btn_start"))
         else:
-            self._set_status(self.voice_label, "⏸️ Slušanje je isključeno", "warn")
-            self.listen_btn.setText("Uključi slušanje")
+            self._set_status(self.voice_label, tr("listening_stopped"), "warn")
+            self.listen_btn.setText(tr("listen_btn_start"))
 
         user_id = data.get("user_id")
         if user_id:
-            self.user_label.setText(f"Discord ID: {user_id} · uređaj {data.get('device_id', '')}")
+            device_id = data.get('device_id', '')
+            self.user_label.setText(tr("device_info", user_id=user_id, device_id=device_id))
 
     def _on_command_result(self, data: dict) -> None:
         status = str(data.get("status") or "error")
         message = str(data.get("message") or "")
+        code = str(data.get("code") or status)
 
         if status == "success":
             track = data.get("track")
-            text = message or (f"Puštam: {track}" if track else "Komanda je izvršena.")
+            text = message or (tr("cmd_playing", track=track) if track else tr("cmd_executed"))
             self._set_status(self.command_status, f"✅ {text}", "ok")
         elif status == "busy":
             retry = data.get("retry_after")
-            self._set_status(
-                self.command_status,
-                "🎧 " + (message or "Bot je zauzet u drugom kanalu.")
-                + (f" Pokušaj ponovo za ~{retry}s." if retry else ""),
-                "warn",
-            )
-        elif status in ("not_in_voice", "missing_query", "unsupported_command", "too_fast", "rate_limited", "disabled"):
-            self._set_status(self.command_status, "⚠️ " + (message or status), "warn")
+            text = message or tr("cmd_busy")
+            if retry:
+                text += tr("cmd_retry_in", seconds=retry)
+            self._set_status(self.command_status, f"🎧 {text}", "warn")
         else:
-            self._set_status(self.command_status, "❌ " + (message or status), "err")
+            err_text = message or tr(f"err_{code}", default=code)
+            is_warn = status in ("not_in_voice", "missing_query", "unsupported_command", "too_fast", "rate_limited", "disabled", "no_dj_role", "missing_permission")
+            self._set_status(self.command_status, f"⚠️ {err_text}" if is_warn else f"❌ {err_text}", "warn" if is_warn else "err")
 
     def _on_update_info(self, manifest: dict) -> None:
         if not isinstance(manifest, dict):
@@ -1176,7 +1249,9 @@ class MainWindow(QMainWindow):
         self.settings.stt_mode = self.stt_combo.currentText()
         self.settings.stt_model_size = self.model_size_combo.currentText()
         self.settings.stt_cloud_model = self.cloud_model_combo.currentData() or "whisper-large-v3-turbo"
-        self.settings.language = self.lang_combo.currentText()
+        lang_val = self.lang_combo.currentData() or self.lang_combo.currentText()
+        self.settings.language = lang_val
+        i18n.set_language(lang_val)
         trigger_key = self.trigger_key_edit.text().strip()
         if trigger_key:
             try:

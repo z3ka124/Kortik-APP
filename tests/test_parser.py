@@ -120,5 +120,40 @@ class AutoplayCommandTests(unittest.TestCase):
         self.assertIsNone(parse_command("Hey Jarvis autoplay"))
 
 
+class JumpCommandTests(unittest.TestCase):
+    def test_jump_numeric(self):
+        self.assertEqual(parse_command("Hey Jarvis jump 3"), ("jump", "3"))
+        self.assertEqual(parse_command("Hey Jarvis skoci na 2"), ("jump", "2"))
+        self.assertEqual(parse_command("Hey Jarvis prebaci na 5"), ("jump", "5"))
+        self.assertEqual(parse_command("Hey Jarvis idi na 4"), ("jump", "4"))
+
+    def test_jump_word_numbers(self):
+        self.assertEqual(parse_command("Hey Jarvis pesma tri"), ("jump", "3"))
+        self.assertEqual(parse_command("Hey Jarvis skoci na jedan"), ("jump", "1"))
+        self.assertEqual(parse_command("Hey Jarvis jump two"), ("jump", "2"))
+
+
+class DisconnectCommandTests(unittest.TestCase):
+    def test_disconnect_variants(self):
+        for phrase in ("Hey Jarvis disconnect", "Hey Jarvis izadji", "Hey Jarvis napusti", "Hey Jarvis leave"):
+            self.assertEqual(parse_command(phrase), ("disconnect", ""), phrase)
+
+
+class ModerationVoiceCommandTests(unittest.TestCase):
+    def test_mute_preserves_target_casing(self):
+        self.assertEqual(parse_command("Hey Jarvis mute Marko_VIP"), ("mute", "Marko_VIP"))
+        self.assertEqual(parse_command("Hey Jarvis mutiraj Stefan"), ("mute", "Stefan"))
+        self.assertEqual(parse_command("Hey Jarvis utisi DJ_Alex"), ("mute", "DJ_Alex"))
+
+    def test_deafen_preserves_target_casing(self):
+        self.assertEqual(parse_command("Hey Jarvis deafen Nikola"), ("deafen", "Nikola"))
+        self.assertEqual(parse_command("Hey Jarvis ogluvi Petar"), ("deafen", "Petar"))
+
+    def test_mute_without_target_is_rejected(self):
+        self.assertIsNone(parse_command("Hey Jarvis mute"))
+        self.assertIsNone(parse_command("Hey Jarvis mutiraj"))
+
+
+
 if __name__ == "__main__":
     unittest.main()

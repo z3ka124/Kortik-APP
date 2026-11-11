@@ -2,12 +2,12 @@
 """
 Parser glasovnih komandi (bez ijedne spoljne zavisnosti).
 
-Ulaz:  transkribovani tekst (npr. "Kortik pusti senidah bez tebe")
+Ulaz:  transkribovani tekst (npr. "Hey Jarvis pusti senidah bez tebe")
 Izlaz: (command, query) gde je command jedan od:
-       play | skip | stop | pause | resume | volume | None (nije komanda)
+       play | skip | stop | pause | resume | volume | autoplay | jump | disconnect | mute | deafen | None
 
-Pravila su namerno ista kao u legacy `Kortik-VoiceListener/stt_parser.py`,
-ali bez Vosk zavisnosti — ovako parser radi i u cloud i u lokalnom STT rezimu.
+Podržava srpske i engleske fraze. Imena korisnika (kod mute/deafen) se NIKADA
+ne normalizuju destruktivno — originalni string (casing i karakteri) ostaje očuvan.
 """
 from __future__ import annotations
 
@@ -21,19 +21,20 @@ WAKE_WORDS: Tuple[str, ...] = (
 
 STOP_WORDS = {
     "stop", "stani", "stanite", "ugasi", "prekini", "zaustavi", "cuti", "prestani", "dosta",
+    "shut up", "halt", "cancel",
 }
 SKIP_WORDS = {
     "skip", "preskoci", "dalje", "sledeca", "sledecu", "next", "druga", "prebaci", "promeni",
 }
-PAUSE_WORDS = {"pause", "pauza", "pauziraj", "cekaj", "wait", "pauzu"}
+PAUSE_WORDS = {"pause", "pauza", "pauziraj", "cekaj", "wait", "pauzu", "hold"}
 RESUME_WORDS = {"resume", "nastavi", "unpause", "kreni", "continue", "pusti dalje"}
 VOLUME_WORDS = {
     "volume", "volumen", "glasnoca", "glasnocu", "jacina", "pojacaj", "smanji", "utisaj",
-    "volume up", "volume down",
+    "volume up", "volume down", "turn up", "turn down", "louder", "quieter",
 }
 PLAY_WORDS = {
     "play", "pusti", "pustaj", "sviraj", "dodaj", "opali", "daj", "ukljuci", "reprodukuj",
-    "pokreni", "zapocni",
+    "pokreni", "zapocni", "start", "listen to",
 }
 AUTOPLAY_WORDS = {"autoplay", "auto plej", "autoplej", "auto play"}
 AUTOPLAY_ON_WORDS = {"on", "ukljuci", "upali", "paljenje", "start", "da", "enabled", "ukljucivanje"}
@@ -42,18 +43,40 @@ AUTOPLAY_OFF_WORDS = {
     "iskljucivanje", "gasenje",
 }
 
+DISCONNECT_WORDS = {
+    "disconnect", "diskonektuj", "izadji", "napusti", "otkaci se", "idi ca", "leave", "quit",
+    "napusti kanal", "leave channel", "disconnect bot",
+}
+
+JUMP_PREFIXES = {
+    "jump", "jump to", "skoci", "skoci na", "prebaci na", "idi na", "pesma broj", "pesma", "traka broj",
+    "traka", "track", "track number", "song number", "broj",
+}
+
+MUTE_VERBS = {
+    "mute", "mutiraj", "utisi", "ugasi mikrofon", "silence", "mute user",
+}
+
+DEAFEN_VERBS = {
+    "deafen", "ogluvi", "defenuj", "ugasi zvuk", "zagluvi", "deafen user",
+}
+
 _NUMBER_WORDS = {
     "nula": 0, "zero": 0,
-    "jedan": 1, "one": 1, "jednu": 1,
-    "dva": 2, "two": 2, "dve": 2,
-    "tri": 3, "three": 3,
-    "cetiri": 4, "four": 4,
-    "pet": 5, "five": 5,
-    "sest": 6, "six": 6,
-    "sedam": 7, "seven": 7,
-    "osam": 8, "eight": 8,
-    "devet": 9, "nine": 9,
-    "deset": 10, "ten": 10,
+    "jedan": 1, "one": 1, "jednu": 1, "prva": 1, "prvu": 1, "first": 1,
+    "dva": 2, "two": 2, "dve": 2, "druga": 2, "drugu": 2, "second": 2,
+    "tri": 3, "three": 3, "treca": 3, "trecu": 3, "third": 3,
+    "cetiri": 4, "four": 4, "fourth": 4,
+    "pet": 5, "five": 5, "fifth": 5,
+    "sest": 6, "six": 6, "sixth": 6,
+    "sedam": 7, "seven": 7, "seventh": 7,
+    "osam": 8, "eight": 8, "eighth": 8,
+    "devet": 9, "nine": 9, "ninth": 9,
+    "deset": 10, "ten": 10, "tenth": 10,
+    "jedanaest": 11, "eleven": 11,
+    "dvanaest": 12, "twelve": 12,
+    "trinaest": 13, "thirteen": 13,
+    "cetrnaest": 14, "fourteen": 14,
     "petnaest": 15, "fifteen": 15,
     "dvadeset": 20, "twenty": 20,
     "trideset": 30, "thirty": 30,
@@ -68,12 +91,12 @@ _NUMBER_WORDS = {
 
 _FILLER_WORDS = {
     "molim", "te", "molimte", "bi", "hocu", "zelim", "ajde", "hajde", "sada", "sad",
-    "bre", "brate", "mi", "nam", "vam", "moze", "mozes",
+    "bre", "brate", "mi", "nam", "vam", "moze", "mozes", "please", "can", "you",
 }
 
 
 def normalize(text: str) -> str:
-    """Mala slova, bez dijakritika, bez viska razmaka i interpunkcije na krajevima."""
+    """Mala slova, bez dijakritika, bez viška razmaka i interpunkcije na krajevima."""
     if not text:
         return ""
     text = unicodedata.normalize("NFKD", str(text))
@@ -85,7 +108,7 @@ def normalize(text: str) -> str:
 
 
 def strip_wake_word(text: str) -> Tuple[str, bool]:
-    """Uklanja wake word sa pocetka. Vraca (ostatak, da_li_je_bio)."""
+    """Uklanja wake word sa početka. Vraća (ostatak, da_li_je_bio)."""
     normalized = normalize(text)
     for wake in sorted(WAKE_WORDS, key=len, reverse=True):
         if normalized == wake:
@@ -95,13 +118,31 @@ def strip_wake_word(text: str) -> Tuple[str, bool]:
     return normalized, False
 
 
+def strip_wake_word_raw(text: str) -> Tuple[str, bool]:
+    """Uklanja wake word sa početka, ali čuva originalni tekst (velika/mala slova)."""
+    raw = (text or "").strip()
+    norm = normalize(raw)
+    for wake in sorted(WAKE_WORDS, key=len, reverse=True):
+        if norm == wake:
+            return "", True
+        if norm.startswith(wake + " "):
+            # Pronađi kraj wake word-a u raw tekstu
+            parts = wake.split()
+            pattern = r"^\s*" + r"\s+".join(re.escape(p) for p in parts) + r"\s*"
+            m = re.match(pattern, raw, re.IGNORECASE)
+            if m:
+                return raw[m.end():].strip(), True
+            return raw[len(wake):].strip(), True
+    return raw, False
+
+
 def is_wake_word_only(text: str) -> bool:
     remainder, had = strip_wake_word(text)
     return had and not remainder
 
 
 def has_wake_word(text: str) -> bool:
-    """Da li tekst sadrzi wake word."""
+    """Da li tekst sadrži wake word."""
     _, had = strip_wake_word(text)
     return had
 
@@ -122,14 +163,16 @@ def _extract_number(tokens: Iterable[str], raw: str) -> Optional[int]:
                 return value
     for token in tokens:
         if token in _NUMBER_WORDS:
-            return _NUMBER_WORDS[token]
+            val = _NUMBER_WORDS[token]
+            if 1 <= val <= 200:
+                return val
     return None
 
 
 def _match_phrase(tokens: list) -> Optional[str]:
     if not tokens:
         return None
-    for size in (2, 1):
+    for size in (3, 2, 1):
         if len(tokens) >= size:
             phrase = " ".join(tokens[:size])
             if phrase in STOP_WORDS:
@@ -144,11 +187,13 @@ def _match_phrase(tokens: list) -> Optional[str]:
                 return "volume"
             if phrase in PLAY_WORDS:
                 return "play"
+            if phrase in DISCONNECT_WORDS:
+                return "disconnect"
     return None
 
 
 def _autoplay_mode(tokens: list) -> Optional[str]:
-    """Vraca 'on'/'off' ako postoji eksplicitna namera, inace None."""
+    """Vraća 'on'/'off' ako postoji eksplicitna namera, inače None."""
     for token in tokens:
         if token in AUTOPLAY_ON_WORDS:
             return "on"
@@ -158,48 +203,91 @@ def _autoplay_mode(tokens: list) -> Optional[str]:
     return None
 
 
+def _extract_raw_target(raw_remainder: str, verb_tokens_count: int) -> str:
+    """Izvlači originalni naziv korisnika (očuvan casing) nakon glagola."""
+    raw_tokens = raw_remainder.split()
+    if len(raw_tokens) > verb_tokens_count:
+        target = " ".join(raw_tokens[verb_tokens_count:]).strip()
+        # Očisti interpunkciju sa krajeva ako postoji
+        return target.strip(".,!?\"'")
+    return ""
+
+
 def parse_command(text: str) -> Optional[Tuple[str, str]]:
     """
-    Vraca (command, query) ili None ako tekst nije komanda.
+    Vraća (command, query) ili None ako tekst nije komanda.
 
     Primeri:
-        "Kortik pusti senidah bez tebe" -> ("play", "senidah bez tebe")
-        "Kortik skip"                   -> ("skip", "")
-        "Kortik glasnoca 80"            -> ("volume", "80")
-        "Kortik pojacaj"                -> ("volume", "+15")
-        "kako si"                       -> None
+        "Hey Jarvis pusti senidah bez tebe" -> ("play", "senidah bez tebe")
+        "Hey Jarvis skip"                   -> ("skip", "")
+        "Hey Jarvis jump 3"                 -> ("jump", "3")
+        "Hey Jarvis disconnect"             -> ("disconnect", "")
+        "Hey Jarvis mute Marko"             -> ("mute", "Marko")
+        "Hey Jarvis deafen Stefan"          -> ("deafen", "Stefan")
     """
     remainder, had_wake = strip_wake_word(text)
+    raw_remainder, _ = strip_wake_word_raw(text)
     if not remainder:
         return None
 
     tokens = remainder.split()
 
-    # Autoplay on/off prepoznajemo PRE ostalih glagola — jer npr. „uključi autoplay"
-    # inače uhvati "ukljuci" kao play. Gledamo ceo ostatak (npr. "auto play" je dve reci).
-    # Zahtevamo eksplicitno on/off.
+    # 1. Disconnect provera (pre ostalih jednorečnih komandi)
+    for size in (2, 1):
+        if len(tokens) >= size:
+            phrase = " ".join(tokens[:size])
+            if phrase in DISCONNECT_WORDS:
+                return ("disconnect", "")
+
+    # 2. Autoplay on/off provera
     if any(w in remainder for w in AUTOPLAY_WORDS):
         mode = _autoplay_mode(tokens)
         if mode:
             return ("autoplay", mode)
 
+    # 3. Mute / Deafen sa očuvanjem ciljanog korisnika
+    for size in (2, 1):
+        if len(tokens) >= size:
+            phrase = " ".join(tokens[:size])
+            if phrase in MUTE_VERBS:
+                target = _extract_raw_target(raw_remainder, size)
+                if target:
+                    return ("mute", target)
+                return None
+            if phrase in DEAFEN_VERBS:
+                target = _extract_raw_target(raw_remainder, size)
+                if target:
+                    return ("deafen", target)
+                return None
+
+    # 4. Jump (1-based index)
+    for size in (3, 2, 1):
+        if len(tokens) >= size:
+            phrase = " ".join(tokens[:size])
+            if phrase in JUMP_PREFIXES:
+                rem_tokens = tokens[size:]
+                val = _extract_number(rem_tokens, remainder)
+                if val is not None and val >= 1:
+                    return ("jump", str(val))
+
     command = _match_phrase(tokens)
 
+    # 5. Volume
     if command == "volume":
         value = _extract_number(tokens, remainder)
         if value is not None:
             return ("volume", str(value))
-        # Ako je eksplicitno izgovoren broj ali van opsega 1..200 (npr. "0", "201",
-        # "zero") — odbij, umesto da ga tretiramo kao "pojačaj".
         if any(t.isdigit() or t in _NUMBER_WORDS for t in tokens):
             return None
-        if any(w in remainder for w in ("smanji", "utisaj", "down", "dole")):
+        if any(w in remainder for w in ("smanji", "utisaj", "down", "dole", "quieter")):
             return ("volume", "-15")
         return ("volume", "+15")
 
-    if command in ("stop", "skip", "pause", "resume"):
+    # 6. Stop, Skip, Pause, Resume
+    if command in ("stop", "skip", "pause", "resume", "disconnect"):
         return (command, "")
 
+    # 7. Play
     if command == "play":
         query_tokens = [
             t for t in tokens[1:] if t not in _FILLER_WORDS
@@ -209,8 +297,7 @@ def parse_command(text: str) -> Optional[Tuple[str, str]]:
             return ("play", query)
         return None
 
-    # Nema eksplicitnog glagola: ako je recenica posle wake word-a dovoljno
-    # "sadrzajna", tretiramo je kao zahtev za pesmu ("Kortik senidah bez tebe").
+    # 8. Implicitno puštanje pesme (nema eksplicitnog glagola)
     if had_wake:
         content = [t for t in tokens if t not in _FILLER_WORDS]
         if len(content) >= 2:
