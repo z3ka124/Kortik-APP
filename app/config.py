@@ -65,6 +65,10 @@ class Settings:
     mic_device: str = ""              # prazno = sistemski default
     mic_gain: float = 1.0
     sensitivity: float = 0.75          # 0..1 -> prag KWS-a
+    # Push-to-talk okidač: tekst tastera ("K", "F9", "CTRL+K"); prazno = isključeno
+    trigger_key: str = ""
+    # Zvučni efekti (wake word aktiviran + komanda prepoznata)
+    sound_effects: bool = True
     listen_only_in_voice: bool = True
     # Da li je korisnik ostavio slusanje upaljeno — pamti se kroz restart
     listening: bool = False

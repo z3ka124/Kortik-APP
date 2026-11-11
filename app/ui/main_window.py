@@ -53,6 +53,13 @@ QGroupBox { border: 1px solid #2a3040; border-radius: 10px; margin-top: 12px; pa
 QGroupBox::title { subcontrol-origin: margin; left: 12px; color: #9aa3b2; }
 """
 
+_LANGUAGE_CHOICES = [
+    "auto", "sr", "en", "hr", "bs", "mk", "sl",
+    "de", "fr", "es", "it", "pt", "nl", "ru", "tr", "uk", "pl",
+    "cs", "sk", "bg", "hu", "ro", "sv", "da", "no", "fi", "el",
+    "ar", "hi", "zh", "ja", "ko",
+]
+
 
 class UiSignals(QObject):
     pairing_code = Signal(dict)
@@ -66,6 +73,7 @@ class UiSignals(QObject):
     update_ready = Signal(object)
     listener_event = Signal(object)
     listen_level = Signal(int)
+    hotkey_pressed = Signal()
 
 
 class MainWindow(QMainWindow):
@@ -95,6 +103,7 @@ class MainWindow(QMainWindow):
         self.last_heartbeat: Dict[str, Any] = {}
         self.pending_update: Optional[Dict[str, Any]] = None
         self.listener_service: Any = None
+        self._hotkey: Any = None
 
         self.signals = UiSignals()
         self._wire_signals()
@@ -127,6 +136,7 @@ class MainWindow(QMainWindow):
         self.signals.update_ready.connect(self._on_update_ready)
         self.signals.listener_event.connect(self._on_listener_event)
         self.signals.listen_level.connect(self._on_listen_level)
+        self.signals.hotkey_pressed.connect(self._on_hotkey_pressed)
 
     @staticmethod
     def _set_status(label: QLabel, text: str, kind: str = "") -> None:
@@ -494,8 +504,17 @@ class MainWindow(QMainWindow):
         self.cloud_model_label = QLabel("Cloud model")
         form.addRow(self.cloud_model_label, self.cloud_model_combo)
         self.lang_combo = QComboBox()
-        self.lang_combo.addItems(["sr", "en", "auto"])
-        self.lang_combo.setCurrentText(self.settings.language)
+        self.lang_combo.addItems(_LANGUAGE_CHOICES)
+        lang_index = self.lang_combo.findText(self.settings.language)
+        if lang_index >= 0:
+            self.lang_combo.setCurrentIndex(lang_index)
+        else:
+            self.lang_combo.addItem(self.settings.language)
+            self.lang_combo.setCurrentIndex(self.lang_combo.count() - 1)
+        self.lang_combo.setToolTip(
+            "Jezik u kom pričaš komande (auto = sam prepozna). "
+            "Za srpski ostavi 'sr' — tako Whisper najbolje prepoznaje."
+        )
         form.addRow("Jezik komandi", self.lang_combo)
         self.sens_slider = QSlider(Qt.Horizontal)
         self.sens_slider.setRange(0, 100)
@@ -504,6 +523,17 @@ class MainWindow(QMainWindow):
             "Osetljivost wake word-a: levo = strože (manje lažnih poziva), desno = osetljivije"
         )
         form.addRow("Osetljivost wake word-a", self.sens_slider)
+        self.trigger_key_edit = QLineEdit()
+        self.trigger_key_edit.setText(getattr(self.settings, "trigger_key", "") or "")
+        self.trigger_key_edit.setPlaceholderText('npr. K, F9 ili CTRL+K (prazno = isključeno)')
+        self.trigger_key_edit.setToolTip(
+            "Push-to-talk: kad pritisneš ovaj taster, nema potrebe da izgovaraš wake word —\n"
+            "snimanje se odmah uključuje. Radi globalno (i kad je aplikacija u pozadini)."
+        )
+        form.addRow("Trigger taster (PTT)", self.trigger_key_edit)
+        self.sound_check = QCheckBox("Zvučni efekti (wake + komanda)")
+        self.sound_check.setChecked(getattr(self.settings, "sound_effects", True))
+        form.addRow("", self.sound_check)
         self.only_vc_check = QCheckBox("Slušaj samo dok sam u voice kanalu")
         self.only_vc_check.setChecked(self.settings.listen_only_in_voice)
         form.addRow("", self.only_vc_check)
@@ -1030,6 +1060,7 @@ class MainWindow(QMainWindow):
             self.listen_btn.setText("Zaustavi slušanje")
             self.settings.listening = True
             save_settings(self.paths, self.settings)
+            self._apply_hotkey()
             self._set_status(
                 self.voice_label,
                 f"Slušanje: tražim „Hey Jarvis“ (STT={self.settings.stt_mode})",
@@ -1062,6 +1093,7 @@ class MainWindow(QMainWindow):
         self.listen_check.blockSignals(False)
         if hasattr(self, "listen_btn"):
             self.listen_btn.setText("Uključi slušanje")
+        self._remove_hotkey()
         self.settings.listening = False
         save_settings(self.paths, self.settings)
         self._set_status(self.voice_label, "⏸️ Slušanje je isključeno", "warn")
@@ -1089,6 +1121,16 @@ class MainWindow(QMainWindow):
 
     def _on_listener_event(self, payload: dict) -> None:
         kind = (payload or {}).get("kind")
+        if getattr(self.settings, "sound_effects", True):
+            try:
+                from app.audio.sounds import play_command, play_wake
+
+                if kind == "wake":
+                    play_wake()
+                elif kind == "command":
+                    play_command()
+            except Exception:
+                pass
         if kind == "wake":
             self._set_status(self.voice_label, f"👂 Čuo sam „{payload.get('keyword')}“ — govori…", "ok")
         elif kind == "wake_only":
@@ -1117,6 +1159,17 @@ class MainWindow(QMainWindow):
         self.settings.stt_model_size = self.model_size_combo.currentText()
         self.settings.stt_cloud_model = self.cloud_model_combo.currentData() or "whisper-large-v3-turbo"
         self.settings.language = self.lang_combo.currentText()
+        trigger_key = self.trigger_key_edit.text().strip()
+        if trigger_key:
+            try:
+                from app.system.hotkey import normalize_hotkey
+
+                trigger_key = normalize_hotkey(trigger_key)
+            except ValueError as exc:
+                QMessageBox.warning(self, "Trigger taster", f"Neispravan taster: {exc}")
+                return
+        self.settings.trigger_key = trigger_key
+        self.settings.sound_effects = self.sound_check.isChecked()
         self.settings.sensitivity = self.sens_slider.value() / 100.0
         self.settings.listen_only_in_voice = self.only_vc_check.isChecked()
         self.settings.autostart = self.autostart_check.isChecked()
@@ -1162,6 +1215,40 @@ class MainWindow(QMainWindow):
             self.logger.info("Listening restartovan (nova podešavanja primenjena).")
         self._start_listening()
 
+    # ── Push-to-talk (globalni taster) ───────────────────────────────────────
+    def _on_hotkey_pressed(self) -> None:
+        core = getattr(self.listener_service, "core", None)
+        if core is None:
+            return
+        action = core.trigger()
+        if action is not None:
+            self.signals.listener_event.emit(
+                {"kind": "wake", "keyword": getattr(action, "keyword", "trigger")}
+            )
+
+    def _apply_hotkey(self) -> None:
+        self._remove_hotkey()
+        key = (getattr(self.settings, "trigger_key", "") or "").strip()
+        if not key:
+            return
+        try:
+            from app.system.hotkey import GlobalHotkey
+
+            self._hotkey = GlobalHotkey(lambda: self.signals.hotkey_pressed.emit())
+            self._hotkey.start(key)
+            self.logger.info("Globalni taster registrovan: %s", key)
+        except Exception as exc:
+            self.logger.warning("Globalni taster nije registrovan (%s): %s", key, exc)
+
+    def _remove_hotkey(self) -> None:
+        hotkey = getattr(self, "_hotkey", None)
+        if hotkey is not None:
+            try:
+                hotkey.stop()
+            except Exception:
+                pass
+            self._hotkey = None
+
     def _open_dashboard(self) -> None:
         QDesktopServices.openUrl(QUrl("https://kortikbot.xyz/user/listener"))
 
@@ -1189,6 +1276,7 @@ class MainWindow(QMainWindow):
     def closeEvent(self, event) -> None:  # noqa: N802 (Qt API)
         try:
             self.heartbeat_timer.stop()
+            self._remove_hotkey()
             service, self.listener_service = self.listener_service, None
             if service is not None:
                 try:

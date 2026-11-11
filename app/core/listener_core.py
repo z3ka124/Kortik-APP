@@ -67,6 +67,23 @@ class ListenerCore:
             except Exception:
                 pass
 
+    def trigger(self, now: Optional[float] = None) -> Optional[ListenerAction]:
+        """Ručni okidač (push-to-talk): isto kao da je izgovoren wake word.
+
+        Sledeći audio chunk ulazi direktno u utterance snimanje (bez KWS-a).
+        """
+        if self.wake_by_stt:
+            return None
+        current = self.clock() if now is None else now
+        self._last_wake = current
+        self._armed = True
+        try:
+            self.recorder.reset()
+        except Exception:
+            pass
+        logger.info("Ručni okidač (PTT taster).")
+        return ListenerAction(kind="wake", keyword="trigger")
+
     # ── obrada 20 ms chunkova ───────────────────────────────────────────────
     def process_chunk(self, pcm: bytes, now: Optional[float] = None) -> Optional[ListenerAction]:
         if not pcm:
