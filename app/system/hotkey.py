@@ -1,9 +1,14 @@
 # c:\Kortik\Kortik-Listener-App\app\system\hotkey.py
-"""Globalni Windows hotkey (RegisterHotKey) za push-to-talk okidač.
+"""Globalni Windows hotkey za push-to-talk (pritisak + otpuštanje tastera).
 
-Nema spoljnih zavisnosti — koristi ctypes/user32. Registracija i message pump
-idu u poseban thread; `callback` se poziva na tom threadu (MainWindow ga
-premošćuje na Qt signal).
+`RegisterHotKey` daje samo događaj pritiska — nema key-up. Zato koristimo
+low-level keyboard hook (WH_KEYBOARD_LL) koji dobija i WM_KEYDOWN i WM_KEYUP,
+što je neophodno za pravi "drži taster = snima, pusti = staje" push-to-talk.
+
+Hook radi u POSEBAN thread-u sa sopstvenom message pumpom (GetMessageW) i
+obavezno se oslobađa (`UnhookWindowsHookEx`) u `finally`, da ne curi posle
+zaustavljanja ili pada aplikacije. Callback (WINFUNCTYPE) se drži u
+`self._callback_ref` da ga GC ne pokupi dok je hook aktivan.
 """
 from __future__ import annotations
 
@@ -16,8 +21,16 @@ MOD_ALT = 0x1
 MOD_CONTROL = 0x2
 MOD_SHIFT = 0x4
 
-WM_HOTKEY = 0x0312
+WM_KEYDOWN = 0x0100
+WM_KEYUP = 0x0101
+WM_SYSKEYDOWN = 0x0104
+WM_SYSKEYUP = 0x0105
 WM_QUIT = 0x0012
+
+WH_KEYBOARD_LL = 13
+VK_SHIFT = 0x10
+VK_CONTROL = 0x11
+VK_MENU = 0x12
 
 _VK: dict = {}
 for _i, _ch in enumerate("ABCDEFGHIJKLMNOPQRSTUVWXYZ"):
@@ -95,20 +108,38 @@ class MSG(ctypes.Structure):
         ("lParam", wintypes.LPARAM),
         ("time", wintypes.DWORD),
         ("pt", POINT),
+        ("lPrivate", wintypes.DWORD),
+    ]
+
+
+class KBDLLHOOKSTRUCT(ctypes.Structure):
+    _fields_ = [
+        ("vkCode", wintypes.DWORD),
+        ("scanCode", wintypes.DWORD),
+        ("flags", wintypes.DWORD),
+        ("time", wintypes.DWORD),
+        ("dwExtraInfo", ctypes.c_void_p),
     ]
 
 
 class GlobalHotkey:
-    """Registruje globalni taster i poziva callback svaki put kad se pritisne."""
+    """Nisko-nivojski keyboard hook: prati pritisak I otpuštanje zadatog tastera."""
 
-    def __init__(self, callback: Callable[[], None]):
-        self._callback = callback
+    def __init__(
+        self,
+        on_press: Optional[Callable[[], None]] = None,
+        on_release: Optional[Callable[[], None]] = None,
+    ):
+        self._on_press = on_press
+        self._on_release = on_release
         self._thread: Optional[threading.Thread] = None
+        self._hook: Optional[int] = None
+        self._callback_ref = None
         self._stop = threading.Event()
-        self._id = 0xBEEF
         self._mods = 0
         self._vk = 0
         self._active = False
+        self._down = False
 
     @property
     def active(self) -> bool:
@@ -123,27 +154,77 @@ class GlobalHotkey:
 
     def _run(self) -> None:
         user32 = ctypes.windll.user32
+        kernel32 = ctypes.windll.kernel32
+
+        def key_down(vk: int) -> bool:
+            return bool(user32.GetAsyncKeyState(vk) & 0x8000)
+
+        def mods_match() -> bool:
+            ctrl = key_down(VK_CONTROL)
+            alt = key_down(VK_MENU)
+            shift = key_down(VK_SHIFT)
+            return (
+                ctrl == bool(self._mods & MOD_CONTROL)
+                and alt == bool(self._mods & MOD_ALT)
+                and shift == bool(self._mods & MOD_SHIFT)
+            )
+
+        HOOKPROC = ctypes.WINFUNCTYPE(
+            ctypes.c_ssize_t, ctypes.c_int, wintypes.WPARAM, wintypes.LPARAM
+        )
+
+        def _hook_proc(nCode, wParam, lParam):
+            try:
+                if nCode >= 0:
+                    msg = int(wParam)
+                    if msg in (WM_KEYDOWN, WM_SYSKEYDOWN):
+                        kbd = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                        if kbd.vkCode == self._vk and mods_match():
+                            if not self._down:
+                                self._down = True
+                                if self._on_press:
+                                    try:
+                                        self._on_press()
+                                    except Exception:
+                                        pass
+                    elif msg in (WM_KEYUP, WM_SYSKEYUP):
+                        kbd = ctypes.cast(lParam, ctypes.POINTER(KBDLLHOOKSTRUCT)).contents
+                        if kbd.vkCode == self._vk and self._down:
+                            self._down = False
+                            if self._on_release:
+                                try:
+                                    self._on_release()
+                                except Exception:
+                                    pass
+            except Exception:
+                pass
+            finally:
+                return user32.CallNextHookEx(self._hook, nCode, wParam, lParam)
+
+        self._callback_ref = HOOKPROC(_hook_proc)
+        hmod = kernel32.GetModuleHandleW(None)
+        self._hook = user32.SetWindowsHookExW(WH_KEYBOARD_LL, self._callback_ref, hmod, 0)
+        if not self._hook:
+            self._active = False
+            return
+        self._active = True
+
+        msg = MSG()
         try:
-            if not user32.RegisterHotKey(None, self._id, self._mods, self._vk):
-                self._active = False
-                return
-            self._active = True
-            msg = MSG()
             while not self._stop.is_set():
                 result = user32.GetMessageW(ctypes.byref(msg), None, 0, 0)
                 if result <= 0:  # WM_QUIT ili greška
                     break
-                if msg.message == WM_HOTKEY and msg.wParam == self._id:
-                    try:
-                        self._callback()
-                    except Exception:
-                        pass
         finally:
-            try:
-                user32.UnregisterHotKey(None, self._id)
-            except Exception:
-                pass
+            if self._hook:
+                try:
+                    user32.UnhookWindowsHookEx(self._hook)
+                except Exception:
+                    pass
+                self._hook = None
             self._active = False
+            self._down = False
+            self._callback_ref = None
 
     def stop(self) -> None:
         self._stop.set()

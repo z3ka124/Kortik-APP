@@ -74,6 +74,7 @@ class UiSignals(QObject):
     listener_event = Signal(object)
     listen_level = Signal(int)
     hotkey_pressed = Signal()
+    hotkey_released = Signal()
 
 
 class MainWindow(QMainWindow):
@@ -137,6 +138,7 @@ class MainWindow(QMainWindow):
         self.signals.listener_event.connect(self._on_listener_event)
         self.signals.listen_level.connect(self._on_listen_level)
         self.signals.hotkey_pressed.connect(self._on_hotkey_pressed)
+        self.signals.hotkey_released.connect(self._on_hotkey_released)
 
     @staticmethod
     def _set_status(label: QLabel, text: str, kind: str = "") -> None:
@@ -527,10 +529,22 @@ class MainWindow(QMainWindow):
         self.trigger_key_edit.setText(getattr(self.settings, "trigger_key", "") or "")
         self.trigger_key_edit.setPlaceholderText('npr. K, F9 ili CTRL+K (prazno = isključeno)')
         self.trigger_key_edit.setToolTip(
-            "Push-to-talk: kad pritisneš ovaj taster, nema potrebe da izgovaraš wake word —\n"
-            "snimanje se odmah uključuje. Radi globalno (i kad je aplikacija u pozadini)."
+            "Globalni taster (radi i kad je aplikacija u pozadini).\n"
+            "Push-to-talk: drži taster da bi snimala, pusti da stane.\n"
+            "Toggle: jedan pritisak uključi, drugi isključi."
         )
-        form.addRow("Trigger taster (PTT)", self.trigger_key_edit)
+        self.trigger_mode_combo = QComboBox()
+        self.trigger_mode_combo.addItem("Push-to-talk (drži)", "push_to_talk")
+        self.trigger_mode_combo.addItem("Toggle (uključi/isključi)", "toggle")
+        mode_idx = self.trigger_mode_combo.findData(
+            getattr(self.settings, "trigger_mode", "push_to_talk") or "push_to_talk"
+        )
+        if mode_idx >= 0:
+            self.trigger_mode_combo.setCurrentIndex(mode_idx)
+        trigger_row = QHBoxLayout()
+        trigger_row.addWidget(self.trigger_key_edit, 1)
+        trigger_row.addWidget(self.trigger_mode_combo)
+        form.addRow("Trigger taster (PTT)", trigger_row)
         self.sound_check = QCheckBox("Zvučni efekti (wake + komanda)")
         self.sound_check.setChecked(getattr(self.settings, "sound_effects", True))
         form.addRow("", self.sound_check)
@@ -1125,7 +1139,7 @@ class MainWindow(QMainWindow):
             try:
                 from app.audio.sounds import play_command, play_wake
 
-                if kind == "wake":
+                if kind in ("wake", "ptt_active"):
                     play_wake()
                 elif kind == "command":
                     play_command()
@@ -1133,6 +1147,10 @@ class MainWindow(QMainWindow):
                 pass
         if kind == "wake":
             self._set_status(self.voice_label, f"👂 Čuo sam „{payload.get('keyword')}“ — govori…", "ok")
+        elif kind == "ptt_active":
+            self._set_status(self.voice_label, "🎙️ PTT: snimam… pusti taster", "ok")
+        elif kind == "ptt_off":
+            self._set_status(self.voice_label, "⏸️ PTT: snimanje isključeno", "warn")
         elif kind == "wake_only":
             self._set_status(self.voice_label, "👂 Samo wake word — čekam komandu.", "warn")
         elif kind == "text":
@@ -1169,6 +1187,7 @@ class MainWindow(QMainWindow):
                 QMessageBox.warning(self, "Trigger taster", f"Neispravan taster: {exc}")
                 return
         self.settings.trigger_key = trigger_key
+        self.settings.trigger_mode = self.trigger_mode_combo.currentData() or "push_to_talk"
         self.settings.sound_effects = self.sound_check.isChecked()
         self.settings.sensitivity = self.sens_slider.value() / 100.0
         self.settings.listen_only_in_voice = self.only_vc_check.isChecked()
@@ -1217,14 +1236,41 @@ class MainWindow(QMainWindow):
 
     # ── Push-to-talk (globalni taster) ───────────────────────────────────────
     def _on_hotkey_pressed(self) -> None:
+        self.runner.submit(self._task_hotkey_down())
+
+    def _on_hotkey_released(self) -> None:
+        self.runner.submit(self._task_hotkey_up())
+
+    async def _task_hotkey_down(self) -> None:
         core = getattr(self.listener_service, "core", None)
         if core is None:
             return
-        action = core.trigger()
-        if action is not None:
-            self.signals.listener_event.emit(
-                {"kind": "wake", "keyword": getattr(action, "keyword", "trigger")}
-            )
+        mode = getattr(self.settings, "trigger_mode", "push_to_talk") or "push_to_talk"
+        if mode == "toggle":
+            action = core.toggle()
+            if action is None:
+                return
+            if getattr(action, "kind", "") == "toggle_off":
+                self.signals.listener_event.emit({"kind": "ptt_off"})
+            else:
+                self.signals.listener_event.emit({"kind": "ptt_active"})
+        else:
+            action = core.trigger_down()
+            if action is not None:
+                self.signals.listener_event.emit({"kind": "ptt_active"})
+
+    async def _task_hotkey_up(self) -> None:
+        core = getattr(self.listener_service, "core", None)
+        if core is None:
+            return
+        if (getattr(self.settings, "trigger_mode", "push_to_talk") or "push_to_talk") != "push_to_talk":
+            return
+        action = core.trigger_up()
+        if action is None or getattr(action, "kind", "") != "utterance":
+            return
+        result = await core.process_utterance_async(action.audio)
+        if result is not None:
+            await self._handle_listener_action(result)
 
     def _apply_hotkey(self) -> None:
         self._remove_hotkey()
@@ -1234,7 +1280,10 @@ class MainWindow(QMainWindow):
         try:
             from app.system.hotkey import GlobalHotkey
 
-            self._hotkey = GlobalHotkey(lambda: self.signals.hotkey_pressed.emit())
+            self._hotkey = GlobalHotkey(
+                on_press=lambda: self.signals.hotkey_pressed.emit(),
+                on_release=lambda: self.signals.hotkey_released.emit(),
+            )
             self._hotkey.start(key)
             self.logger.info("Globalni taster registrovan: %s", key)
         except Exception as exc:

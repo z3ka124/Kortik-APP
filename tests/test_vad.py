@@ -139,6 +139,23 @@ class RecorderTests(unittest.TestCase):
         recorder = UtteranceRecorder(self._config())
         self.assertIsNone(recorder.feed(b""))
 
+    def test_manual_recording_ignores_silence_until_finish(self):
+        recorder = UtteranceRecorder(self._config(silence_ms=100), manual=True)
+        for _ in range(20):
+            recorder.feed(SPEECH)
+        self.assertTrue(recorder.is_recording)
+        for _ in range(200):
+            self.assertIsNone(recorder.feed(SILENCE))  # tišina NE prekida u PTT režimu
+        self.assertTrue(recorder.is_recording)
+        result = recorder.finish()
+        self.assertIsNotNone(result)
+        self.assertGreaterEqual(len(result), 20 * CHUNK_BYTES)
+        self.assertFalse(recorder.is_recording)
+
+    def test_finish_when_idle_returns_none(self):
+        recorder = UtteranceRecorder(self._config(), manual=True)
+        self.assertIsNone(recorder.finish())
+
 
 if __name__ == "__main__":
     unittest.main()

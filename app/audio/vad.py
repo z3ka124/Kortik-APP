@@ -72,8 +72,9 @@ class UtteranceRecorder:
     IDLE = "idle"
     RECORDING = "recording"
 
-    def __init__(self, config: Optional[VadConfig] = None):
+    def __init__(self, config: Optional[VadConfig] = None, manual: bool = False):
         self.config = config or VadConfig()
+        self.manual = bool(manual)
         self.state = self.IDLE
         self.ambient_rms: float = 20.0
         self._pre_roll: Deque[bytes] = deque(maxlen=max(1, self.config.pre_roll_chunks))
@@ -137,7 +138,11 @@ class UtteranceRecorder:
             self._silence_run += 1
 
         done = False
-        if self._silence_run >= self.config.silence_chunks:
+        if self.manual:
+            # PTT: tišina NE završava izgovor — korisnik ga završava ručno (finish()).
+            if self._chunks_in_utterance >= self.config.max_chunks:
+                done = True
+        elif self._silence_run >= self.config.silence_chunks:
             done = True
         elif self._chunks_in_utterance >= self.config.max_chunks:
             done = True
@@ -156,3 +161,14 @@ class UtteranceRecorder:
         was_too_short = self._speech_chunks < self.config.min_speech_chunks
         self.reset()
         return None if was_too_short else audio
+
+    def finish(self) -> Optional[bytes]:
+        """Ručno završi snimanje (PTT: taster pušten) — vraća audio bez čekanja na tišinu."""
+        if self.state != self.RECORDING:
+            return None
+        audio = b"".join(self._buffer)
+        was_too_short = self._speech_chunks < self.config.min_speech_chunks
+        self.reset()
+        if not audio or was_too_short:
+            return None
+        return audio

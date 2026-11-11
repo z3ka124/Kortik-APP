@@ -157,5 +157,61 @@ class UtteranceToCommandTests(unittest.TestCase):
         self.assertIsNone(core.parse_text(""))
 
 
+class PttTests(unittest.TestCase):
+    def test_trigger_down_arms_manual_and_up_returns_utterance(self):
+        core, _, recorder, _ = make_core()
+        self.assertIsNotNone(core.trigger_down())
+        self.assertTrue(core.is_armed)
+        self.assertTrue(recorder.manual)
+
+        # drži taster: govor + tišina NE završavaju snimanje
+        for _ in range(10):
+            self.assertIsNone(core.process_chunk(SPEECH))
+        for _ in range(20):
+            self.assertIsNone(core.process_chunk(SILENCE))
+
+        # pusti taster
+        action = core.trigger_up()
+        self.assertIsNotNone(action)
+        self.assertEqual(action.kind, "utterance")
+        self.assertGreater(len(action.audio), 0)
+        self.assertFalse(core.is_armed)
+        self.assertFalse(recorder.manual)
+
+    def test_trigger_up_without_down_returns_none(self):
+        core, _, _, _ = make_core()
+        self.assertIsNone(core.trigger_up())
+
+    def test_trigger_keeps_backwards_compat(self):
+        core, _, recorder, _ = make_core()
+        self.assertIsNotNone(core.trigger())
+        self.assertTrue(core.is_armed)
+        self.assertFalse(recorder.manual)  # staro ponašanje = VAD režim
+
+    def test_toggle_arms_then_cancels(self):
+        core, _, recorder, _ = make_core()
+        first = core.toggle()
+        self.assertIsNotNone(first)
+        self.assertTrue(core.is_armed)
+        self.assertFalse(recorder.manual)
+        second = core.toggle()
+        self.assertEqual(second.kind, "toggle_off")
+        self.assertFalse(core.is_armed)
+
+    def test_toggle_utterance_auto_ends_via_vad(self):
+        core, _, _, _ = make_core()
+        core.toggle()
+        for _ in range(6):
+            core.process_chunk(SPEECH)
+        utterance = None
+        for _ in range(30):
+            utterance = core.process_chunk(SILENCE)
+            if utterance:
+                break
+        self.assertIsNotNone(utterance)
+        self.assertEqual(utterance.kind, "utterance")
+        self.assertFalse(core.is_armed)
+
+
 if __name__ == "__main__":
     unittest.main()

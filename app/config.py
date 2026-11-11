@@ -67,6 +67,8 @@ class Settings:
     sensitivity: float = 0.75          # 0..1 -> prag KWS-a
     # Push-to-talk okidač: tekst tastera ("K", "F9", "CTRL+K"); prazno = isključeno
     trigger_key: str = ""
+    # Način okidača: "push_to_talk" (drži taster dok snimaš) | "toggle" (uključi/isključi)
+    trigger_mode: str = "push_to_talk"
     # Zvučni efekti (wake word aktiviran + komanda prepoznata)
     sound_effects: bool = True
     listen_only_in_voice: bool = True

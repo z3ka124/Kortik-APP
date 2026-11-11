@@ -56,6 +56,7 @@ class ListenerCore:
 
     def reset(self) -> None:
         self._armed = False
+        self._set_manual(False)
         try:
             self.recorder.reset()
         except Exception:
@@ -68,21 +69,63 @@ class ListenerCore:
                 pass
 
     def trigger(self, now: Optional[float] = None) -> Optional[ListenerAction]:
-        """Ručni okidač (push-to-talk): isto kao da je izgovoren wake word.
+        """Kompatibilni ručni okidač — isto kao wake word (VAD sam završava izgovor)."""
+        return self.trigger_down(now, manual=False)
 
-        Sledeći audio chunk ulazi direktno u utterance snimanje (bez KWS-a).
-        """
+    def _set_manual(self, flag: bool) -> None:
+        """Uključi/isključi 'manual' režim recorder-a (PTT = snima dok se taster ne pusti)."""
+        try:
+            self.recorder.manual = bool(flag)
+        except Exception:
+            pass
+
+    def trigger_down(self, now: Optional[float] = None, manual: bool = True) -> Optional[ListenerAction]:
+        """PTT taster pritisnut: audio se snima dok se taster drži (manual=True)."""
         if self.wake_by_stt:
             return None
         current = self.clock() if now is None else now
         self._last_wake = current
         self._armed = True
+        self._set_manual(manual)
         try:
             self.recorder.reset()
         except Exception:
             pass
-        logger.info("Ručni okidač (PTT taster).")
+        logger.info("PTT pritisnut (manual=%s).", manual)
         return ListenerAction(kind="wake", keyword="trigger")
+
+    def trigger_up(self, now: Optional[float] = None) -> Optional[ListenerAction]:
+        """PTT taster pušten: završi snimanje i vrati utterance (ili None)."""
+        if not self._armed:
+            return None
+        self._armed = False
+        self._set_manual(False)
+        audio = None
+        finish = getattr(self.recorder, "finish", None)
+        if callable(finish):
+            try:
+                audio = finish()
+            except Exception:
+                audio = None
+        logger.info("PTT pušten (audio=%s).", "da" if audio else "ne")
+        if not audio:
+            return None
+        return ListenerAction(kind="utterance", audio=audio)
+
+    def toggle(self, now: Optional[float] = None) -> Optional[ListenerAction]:
+        """Toggle režim: pritisak uključi snimanje (VAD kraj), sledeći pritisak otkazuje."""
+        if self.wake_by_stt:
+            return None
+        if self._armed:
+            self._armed = False
+            self._set_manual(False)
+            try:
+                self.recorder.reset()
+            except Exception:
+                pass
+            logger.info("Toggle: snimanje otkazano.")
+            return ListenerAction(kind="toggle_off", keyword="trigger")
+        return self.trigger_down(now, manual=False)
 
     # ── obrada 20 ms chunkova ───────────────────────────────────────────────
     def process_chunk(self, pcm: bytes, now: Optional[float] = None) -> Optional[ListenerAction]:
@@ -116,6 +159,7 @@ class ListenerCore:
 
         self._last_wake = current
         self._armed = True
+        self._set_manual(False)
         try:
             self.recorder.reset()
         except Exception:
