@@ -731,7 +731,7 @@ class MainWindow(QMainWindow):
             self._set_status(self.command_status, f"🎧 {text}", "warn")
         else:
             err_text = message or tr(f"err_{code}", default=code)
-            is_warn = status in ("not_in_voice", "missing_query", "unsupported_command", "too_fast", "rate_limited", "disabled", "no_dj_role", "missing_permission")
+            is_warn = status in ("not_in_voice", "missing_query", "unsupported_command", "too_fast", "rate_limited", "disabled", "no_dj_role", "missing_permission", "ambiguous_user", "target_not_in_voice", "target_not_found", "hierarchy_error")
             self._set_status(self.command_status, f"⚠️ {err_text}" if is_warn else f"❌ {err_text}", "warn" if is_warn else "err")
 
     def _on_update_info(self, manifest: dict) -> None:
