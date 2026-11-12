@@ -1,12 +1,12 @@
 {
-  "version": "1.1.4",
-  "min_version": "1.0.0",
+  "version": "1.2.0",
+  "min_version": "0.1.0",
   "channel": "stable",
   "platform": "win-x64",
-  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.1.4/KortikListener-1.1.4-setup.exe",
-  "sha256": "70637e7a5578373637ae7fe41bee9251af9bb12079d724ed385ce5ad26e257fa",
-  "size": 129096727,
-  "notes": "1.1.4: brzi STT (4 CPU threada), VAD 400ms tisine",
-  "published_at": "2026-11-09T23:40:43Z",
-  "sig": "af54abc4378a6fc58f254988b6c92f15f2d955d6230f22f72e5cd732052b145e3c06469518bee9d83f7d238f7784b9903ffa2a2e4eaf8766b73cae7972e1a80b"
+  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.2.0/KortikListener-1.2.0-setup.exe",
+  "sha256": "792326cc3e27f3434d5608e5a8f3e64f07be45f946cad3ae6e9b4ee75c07541d",
+  "size": 129131045,
+  "notes": "Kortik Listener 1.2.0",
+  "published_at": "2026-11-12T21:08:00Z",
+  "sig": "13b84ecaf90b7e491a5814088f0972d893f3c6f2d65e7c5184909fd9be2b25ba5b5aabcceb51dfab89c1076e6f0474254663a56ce637b5f17c4cff1293d77606"
 }
