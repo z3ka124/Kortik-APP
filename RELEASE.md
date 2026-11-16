@@ -250,7 +250,7 @@ Stranica za korisnike: **`https://kortikbot.xyz/user/listener`**
 | 4 | `/user/listener` → unos koda → Odobri | app pređe na status, uređaj u listi |
 | 5 | Ulazak u VC | „VC: …“ zeleno u app-u |
 | 6 | „Test komanda“: `pusti senidah bez tebe` | bot uđe i pusti pesmu |
-| 7 | Wake word: „Kortik pusti senidah“ | 👂 → 🎙️ → ✅ + muzika |
+| 7 | Wake word: „Hey Jarvis pusti senidah“ | 👂 → 🎙️ → ✅ + muzika |
 | 8 | Zauzet scenario (dva VC-a) | kulturna poruka + `retry_after` |
 | 9 | `build\check_kws.py --wav tvoj.wav` | detektuje Kortik |
 | 10 | Isključi net → pokreni app | radi (update check fail-open) |

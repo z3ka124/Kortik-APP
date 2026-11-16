@@ -108,7 +108,7 @@ jobs:
             1. Preuzmi `KortikListener-${{ steps.ver.outputs.version }}-setup.exe`
             2. Instaliraj i pokreni
             3. **Upari uređaj** → kod unesi na https://kortikbot.xyz/user/listener
-            4. Uđi u voice kanal → kaži **„Kortik pusti …“**
+            4. Uđi u voice kanal → kaži **„Hey Jarvis pusti …“**
 
             > Instalater nije Authenticode-potpisan u beta fazi, pa Windows može
             > prikazati SmartScreen upozorenje (More info → Run anyway).

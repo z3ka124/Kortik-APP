@@ -54,7 +54,7 @@ prepoznavanju, ne pri pokretanju.
 | 2 | Otvori `https://kortikbot.xyz/user/listener`, unesi kod, **Odobri** | app pređe na status ekran; u „Moji uređaji“ se pojavi tvoj PC |
 | 3 | Uđi u voice kanal na Discord-u | u app-u „VC: *ime kanala*“ postaje zeleno |
 | 4 | Klikni **Test komanda**, ukucaj `pusti senidah bez tebe` | bot uđe u tvoj VC i pusti pesmu; u app-u ✅ |
-| 5 | Uključi **Slušam wake word „Kortik“** i kaži *„Kortik pusti …“* | app prikaže 👂 → 🎙️ → ✅ i pusti pesmu |
+| 5 | Uključi **Slušam wake word „Hey Jarvis“** i kaži *„Hey Jarvis pusti …“* | app prikaže 👂 → 🎙️ → ✅ i pusti pesmu |
 | 6 | Dok bot svira, neko iz drugog VC-a pozove bota | bot odgovori kulturno: „trenutno sviram u drugom kanalu…“ (i app prikaže ⚠️ busy) |
 
 ### Brzi testovi bez mikrofona
@@ -71,7 +71,7 @@ python -m unittest discover -s tests -p "test_*.py"
 - ✅ Device pairing (6-cifreni kod), access/refresh tokeni, revoke po uređaju
 - ✅ HMAC potpis svakog zahteva + replay zaštita + rate limit + audit log
 - ✅ DPAPI čuvanje tajni, logovi sa redakcijom tokena
-- ✅ Wake word **„Kortik“** (Sherpa-ONNX, model u repou)
+- ✅ Wake word **„Hey Jarvis“** (OpenWakeWord, model u repou)
 - ✅ Lokalni STT (`faster-whisper`, privatno) **i** cloud STT (Groq Whisper preko backenda)
 - ✅ Komande: play / pause / resume / skip / stop / volume
 - ✅ „Slušaj samo dok sam u VC-u“, izbor mikrofona, jezik, osetljivost
@@ -113,5 +113,5 @@ python -m unittest discover -s tests -p "test_*.py"
 Pošalji:
 1. screenshot app-a (status linije su najbitnije)
 2. zadnjih 30 linija `listener.log`
-3. tačan izgovor (npr. „Kortik pusti Senidah bez tebe“)
+3. tačan izgovor (npr. „Hey Jarvis pusti Senidah bez tebe“)
 4. da li je radio „Test komanda“ (kucanje) — to razdvaja problem mikrofona od problema bota
