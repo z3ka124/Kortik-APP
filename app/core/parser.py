@@ -2,7 +2,7 @@
 """
 Parser glasovnih komandi (bez ijedne spoljne zavisnosti).
 
-Ulaz:  transkribovani tekst (npr. "Hey Jarvis pusti senidah bez tebe")
+Ulaz:  transkribovani tekst (npr. "Hey Kortik pusti senidah bez tebe")
 Izlaz: (command, query) gde je command jedan od:
        play | skip | stop | pause | resume | volume | autoplay | jump | disconnect | mute | deafen | None
 
@@ -16,7 +16,7 @@ import unicodedata
 from typing import Iterable, Optional, Tuple
 
 WAKE_WORDS: Tuple[str, ...] = (
-    "hej jarvis", "hey jarvis", "jarvis",
+    "hej kortik", "hey kortik", "kortik",
 )
 
 STOP_WORDS = {
@@ -218,12 +218,12 @@ def parse_command(text: str) -> Optional[Tuple[str, str]]:
     Vraća (command, query) ili None ako tekst nije komanda.
 
     Primeri:
-        "Hey Jarvis pusti senidah bez tebe" -> ("play", "senidah bez tebe")
-        "Hey Jarvis skip"                   -> ("skip", "")
-        "Hey Jarvis jump 3"                 -> ("jump", "3")
-        "Hey Jarvis disconnect"             -> ("disconnect", "")
-        "Hey Jarvis mute Marko"             -> ("mute", "Marko")
-        "Hey Jarvis deafen Stefan"          -> ("deafen", "Stefan")
+        "Hey Kortik pusti senidah bez tebe" -> ("play", "senidah bez tebe")
+        "Hey Kortik skip"                   -> ("skip", "")
+        "Hey Kortik jump 3"                 -> ("jump", "3")
+        "Hey Kortik disconnect"             -> ("disconnect", "")
+        "Hey Kortik mute Marko"             -> ("mute", "Marko")
+        "Hey Kortik deafen Stefan"          -> ("deafen", "Stefan")
     """
     remainder, had_wake = strip_wake_word(text)
     raw_remainder, _ = strip_wake_word_raw(text)

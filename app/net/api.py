@@ -19,6 +19,7 @@ from app.version import APP_VERSION, PLATFORM, USER_AGENT
 
 COMMAND_PATH = "/api/listener/command"
 TRANSCRIBE_PATH = "/api/listener/transcribe"
+REPORT_PATH = "/api/listener/report"
 
 
 class ApiError(Exception):
@@ -205,6 +206,45 @@ class ListenerApi:
         headers.update(signed_headers(device_secret, "POST", COMMAND_PATH, raw))
 
         status, data = await self._request("POST", COMMAND_PATH, raw_body=raw, headers=headers)
+        result = dict(data)
+        result["http_status"] = status
+        return result
+
+    async def report_bug(
+        self,
+        access_token: str,
+        device_secret: str,
+        message: str = "",
+        phrases: Optional[list] = None,
+        app_version: str = APP_VERSION,
+        platform: str = PLATFORM,
+        language: str = "sr",
+        os_info: str = "",
+        log_tail: str = "",
+        request_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Prijava buga: opis + problematične fraze + tail loga (HMAC-potpisano)."""
+        payload: Dict[str, Any] = {
+            "message": message or "",
+            "phrases": phrases or [],
+            "app_version": app_version,
+            "platform": platform,
+            "language": language,
+            "os_info": os_info,
+            "log_tail": log_tail,
+            "request_id": request_id or str(uuid.uuid4()),
+        }
+        raw = json.dumps(
+            payload, separators=(",", ":"), sort_keys=True, ensure_ascii=False
+        ).encode("utf-8")
+
+        headers = {
+            "Authorization": f"Bearer {access_token}",
+            "Content-Type": "application/json",
+        }
+        headers.update(signed_headers(device_secret, "POST", REPORT_PATH, raw))
+
+        status, data = await self._request("POST", REPORT_PATH, raw_body=raw, headers=headers)
         result = dict(data)
         result["http_status"] = status
         return result

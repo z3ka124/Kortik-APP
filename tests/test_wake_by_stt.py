@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Wake word preko STT-a (Whisper) — „Hey Jarvis pusti X“ u jednom izgovoru."""
+"""Wake word preko STT-a (Whisper) — „Hey Kortik pusti X“ u jednom izgovoru."""
 import sys
 import unittest
 from pathlib import Path
@@ -31,21 +31,21 @@ def make_core(text: str = "") -> ListenerCore:
 
 class WakeBySttTests(unittest.TestCase):
     def test_full_command_in_one_utterance(self):
-        core = make_core("Hey Jarvis pusti senidah bez tebe")
+        core = make_core("Hey Kortik pusti senidah bez tebe")
         action = core.process_utterance(b"\x00" * 640)
         self.assertIsNotNone(action)
         self.assertEqual(action.kind, "command")
         self.assertEqual(action.command, "play")
         self.assertEqual(action.query, "senidah bez tebe")
 
-    def test_hej_jarvis_variant(self):
-        core = make_core("Hej Jarvis pusti vidi je")
+    def test_hej_kortik_variant(self):
+        core = make_core("Hej Kortik pusti vidi je")
         action = core.process_utterance(b"\x00" * 640)
         self.assertEqual(action.kind, "command")
         self.assertEqual(action.query, "vidi je")
 
     def test_wake_word_only_then_followup(self):
-        core = make_core("Hey Jarvis")
+        core = make_core("Hey Kortik")
         first = core.process_utterance(b"\x00" * 640)
         self.assertEqual(first.kind, "wake_only")
 
@@ -59,16 +59,16 @@ class WakeBySttTests(unittest.TestCase):
         self.assertIsNone(core.process_utterance(b"\x00" * 640))
 
     def test_wake_word_with_non_command_text(self):
-        core = make_core("Hey Jarvis kako si")
+        core = make_core("Hey Kortik kako si")
         action = core.process_utterance(b"\x00" * 640)
         self.assertEqual(action.kind, "text")
 
     def test_wake_word_mid_sentence_not_matched(self):
-        core = make_core("ja sam rekao hey jarvis juce")
+        core = make_core("ja sam rekao hey kortik juce")
         self.assertIsNone(core.process_utterance(b"\x00" * 640))
 
-    def test_kortik_is_not_a_wake_word(self):
-        core = make_core("Kortik pusti senidah bez tebe")
+    def test_jarvis_is_not_a_wake_word(self):
+        core = make_core("Jarvis pusti senidah bez tebe")
         self.assertIsNone(core.process_utterance(b"\x00" * 640))
 
     def test_oww_mode_still_works(self):

@@ -44,6 +44,7 @@ def main() -> int:
         "app.stt.wav", "app.updater.manifest", "app.updater.installer",
         "app.system.autostart", "app.net.api", "app.auth.device_flow",
         "app.security.dpapi", "app.security.storage", "app.security.request_signer",
+        "app.phrases",
     ]
     failed = []
     for name in modules:
@@ -68,7 +69,7 @@ def main() -> int:
 
     check("UI: nema setEnabled(False) na listen", "listen_check.setEnabled(False)" not in ui)
     check("UI: wake word je uvek OWW (nema wake_combo)", "wake_combo" not in ui)
-    check("UI: tekst ceka 'Hey Jarvis'", "čekam „Hey Jarvis" in ui)
+    check("UI: tekst ceka 'Hey Kortik'", "„Hey Kortik" in ui)
     check("UI: log sekcija uklonjena", "log_view" not in ui and "Osveži log" not in ui)
     check(
         "Config: stt_cloud_model",
@@ -79,7 +80,7 @@ def main() -> int:
     from app.kws.openwakeword_kws import default_model_dir, threshold_from_sensitivity
 
     model_dir = default_model_dir()
-    model_present = (model_dir / "hey_jarvis_v0.1.onnx").exists() and (
+    model_present = (model_dir / "hey_kortik.onnx").exists() and (
         model_dir / "melspectrogram.onnx"
     ).exists() and (model_dir / "embedding_model.onnx").exists()
     check("OWW: model pronadjen", model_present, str(model_dir))

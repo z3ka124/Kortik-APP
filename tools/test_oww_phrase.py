@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-OpenWakeWord provera na realnim .wav uzorcima („Hey Jarvis").
+OpenWakeWord provera na realnim .wav uzorcima („Hey Kortik").
 
     python tools\\test_oww_phrase.py
     python tools\\test_oww_phrase.py --threshold 0.35 --dir c:\\Kortik\\Kortik-VoiceListener

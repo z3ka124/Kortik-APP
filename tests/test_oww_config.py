@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""OpenWakeWord (hey_jarvis) konfiguracija i ponasanje — guard testovi."""
+"""OpenWakeWord (hey_kortik) konfiguracija i ponasanje — guard testovi."""
 import sys
 import unittest
 from pathlib import Path
@@ -41,7 +41,7 @@ class FrameSizeTests(unittest.TestCase):
 class ModelDirTests(unittest.TestCase):
     def test_dir_contains_models(self):
         model_dir = default_model_dir()
-        if not (model_dir / "hey_jarvis_v0.1.onnx").exists():
+        if not (model_dir / "hey_kortik.onnx").exists():
             self.skipTest("OWW model nije prisutan u okruženju")
         self.assertTrue(OpenWakeWordKws.available(model_dir))
 

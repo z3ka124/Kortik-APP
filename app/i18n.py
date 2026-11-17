@@ -82,7 +82,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "plugin_active": "Plugin: uključen",
         "plugin_disabled": "Plugin: isključen na serveru",
         "plugin_unknown": "Plugin: nepoznato",
-        "listening_active": "🎙️ Slušam — čekam „Hey Jarvis“",
+        "listening_active": "🎙️ Slušam — čekam „Hey Kortik“",
         "listening_stopped": "⏸️ Slušanje je isključeno",
         "listening_not_in_vc": "⏸️ Slušanje isključeno · nisi u voice kanalu",
         "listening_ptt_active": "🎙️ PTT: snimam… pusti taster",
@@ -91,7 +91,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "wake_only": "👂 Samo wake word — čekam komandu.",
 
         # Listening controls
-        "listen_wake_checkbox": "Slušam wake word „Hey Jarvis“",
+        "listen_wake_checkbox": "Slušam wake word „Hey Kortik“",
         "listen_btn_start": "Uključi slušanje",
         "listen_btn_stop": "Zaustavi slušanje",
         "listen_mic_level_tooltip": "Nivo mikrofona dok slušam",
@@ -146,6 +146,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "save_settings_btn": "Sačuvaj podešavanja",
         "settings_saved_msg": "Podešavanja su sačuvana.",
 
+        # Report bug
+        "report_bug_btn": "🐞 Prijavi problem",
+        "report_bug_title": "Prijavi problem",
+        "report_bug_prompt": "Šta se desilo? (kratko opiši — automatski prilažemo poslednje nerazumevane fraze i isečak loga)",
+        "report_sending": "📨 Šaljem prijavu…",
+        "report_sent": "Prijava je poslata. Hvala! 🐞",
+        "report_not_logged_in": "Prijavu možeš poslati samo kad si uparen.",
+
         # Updates
         "checking_updates": "Provera ažuriranja…",
         "app_up_to_date": "Aplikacija je ažurna.",
@@ -188,7 +196,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "plugin_active": "Plugin: Enabled",
         "plugin_disabled": "Plugin: Disabled on server",
         "plugin_unknown": "Plugin: Unknown",
-        "listening_active": "🎙️ Listening — waiting for 'Hey Jarvis'",
+        "listening_active": "🎙️ Listening — waiting for 'Hey Kortik'",
         "listening_stopped": "⏸️ Listening stopped",
         "listening_not_in_vc": "⏸️ Listening stopped · not in voice channel",
         "listening_ptt_active": "🎙️ PTT: Recording… release key to send",
@@ -197,7 +205,7 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "wake_only": "👂 Wake word detected — awaiting command.",
 
         # Listening controls
-        "listen_wake_checkbox": "Listen for wake word 'Hey Jarvis'",
+        "listen_wake_checkbox": "Listen for wake word 'Hey Kortik'",
         "listen_btn_start": "Start Listening",
         "listen_btn_stop": "Stop Listening",
         "listen_mic_level_tooltip": "Microphone level while listening",
@@ -251,6 +259,14 @@ TRANSLATIONS: Dict[str, Dict[str, str]] = {
         "autostart_label": "Launch on Windows startup",
         "save_settings_btn": "Save Settings",
         "settings_saved_msg": "Settings saved successfully.",
+
+        # Report bug
+        "report_bug_btn": "🐞 Report a bug",
+        "report_bug_title": "Report a bug",
+        "report_bug_prompt": "What happened? (brief description — we'll include recent unrecognised phrases and a log tail automatically)",
+        "report_sending": "📨 Sending report…",
+        "report_sent": "Report sent. Thanks! 🐞",
+        "report_not_logged_in": "You must pair the device before sending a report.",
 
         # Updates
         "checking_updates": "Checking for updates…",

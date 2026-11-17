@@ -87,8 +87,8 @@ buildver_src = os.path.join(PROJECT_ROOT, "app", "_build_version.txt")
 if os.path.exists(buildver_src):
     datas.append((buildver_src, "app"))
 
-# 3) OpenWakeWord model (hey_jarvis + melspectrogram + embedding) — bez ovoga nema wake word
-OWW_MODEL_FILES = ("hey_jarvis_v0.1.onnx", "melspectrogram.onnx", "embedding_model.onnx")
+# 3) OpenWakeWord model (hey_kortik + melspectrogram + embedding) — bez ovoga nema wake word
+OWW_MODEL_FILES = ("hey_kortik.onnx", "melspectrogram.onnx", "embedding_model.onnx")
 oww_model_dir = os.path.join(PROJECT_ROOT, "models", "openwakeword")
 if os.path.isdir(oww_model_dir) and all(
     os.path.exists(os.path.join(oww_model_dir, name)) for name in OWW_MODEL_FILES

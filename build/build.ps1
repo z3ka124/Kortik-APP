@@ -55,7 +55,7 @@ Write-Host "   verzija: $Version (beta) — upisana u app\_build_version.txt"
 # Wake word model: app je sada na OpenWakeWord (models\openwakeword). Proveri da su
 # svi fajlovi tu — bez njih .exe ne bi imao wake word, pa je bolje pasti ovde.
 $owwDir = "models\openwakeword"
-$owwMissing = @("hey_jarvis_v0.1.onnx", "melspectrogram.onnx", "embedding_model.onnx") |
+$owwMissing = @("hey_kortik.onnx", "melspectrogram.onnx", "embedding_model.onnx") |
     Where-Object { -not (Test-Path (Join-Path $owwDir $_)) }
 if ($owwMissing) {
     throw "Nedostaje wake word model u ${owwDir}: $($owwMissing -join ', '). .exe ne bi imao wake word."

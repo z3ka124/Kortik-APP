@@ -8,7 +8,7 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Dict
 
-DEFAULT_WAKE_WORD = "hey jarvis"
+DEFAULT_WAKE_WORD = "hey kortik"
 DEFAULT_LANGUAGE = "sr"
 
 
@@ -52,7 +52,7 @@ class AppPaths:
 class Settings:
     """Sve sto NIJE tajna — tajne idu u SecretStore (DPAPI)."""
 
-    # "oww"  = OpenWakeWord akusticni model „hey_jarvis" (brzo, ~0.1-0.3% CPU) — DEFAULT
+    # "oww"  = OpenWakeWord akusticni model „hey_kortik" (brzo, ~0.1-0.3% CPU) — DEFAULT
     # "stt"  = wake word se trazi u transkriptu (Whisper, razume srpski) — fallback
     wake_engine: str = "oww"
     language: str = DEFAULT_LANGUAGE

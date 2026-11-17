@@ -1,11 +1,11 @@
 # c:\Kortik\Kortik-Listener-App\app\kws\openwakeword_kws.py
 """
-OpenWakeWord wake word detektor za frazu „Hey Jarvis“ (hey_jarvis model).
+OpenWakeWord wake word detektor za frazu „Hey Kortik“ (hey_kortik model).
 
 Interfejs je isti kao sto je bio SherpaKws (`available()/load()/process()/
 reset()/close()`), pa `ListenerCore` ne mora da zna koji engine je aktivan.
 
-Model je bundled u `models/openwakeword/` (hey_jarvis_v0.1.onnx + melspectrogram
+Model je bundled u `models/openwakeword/` (hey_kortik.onnx + melspectrogram
 i embedding — sve iz pip paketa `openwakeword`, Apache-2.0). Nema poziva na mrezu
 u runtime-u.
 
@@ -24,8 +24,8 @@ logger = logging.getLogger("kortik.listener.kws.oww")
 SAMPLE_RATE = 16000
 FRAME_SAMPLES = 1280            # 80 ms @ 16 kHz
 FRAME_BYTES = FRAME_SAMPLES * 2
-WAKE_LABEL = "hey_jarvis"
-_MODEL_FILES = ("hey_jarvis_v0.1.onnx", "melspectrogram.onnx", "embedding_model.onnx")
+WAKE_LABEL = "hey_kortik"
+_MODEL_FILES = ("hey_kortik.onnx", "melspectrogram.onnx", "embedding_model.onnx")
 
 
 def _bundle_root() -> Optional[Path]:
@@ -41,12 +41,12 @@ def default_model_dir() -> Path:
     bundle = _bundle_root()
     if bundle is not None:
         bundled = bundle / "models" / "openwakeword"
-        if (bundled / "hey_jarvis_v0.1.onnx").exists():
+        if (bundled / "hey_kortik.onnx").exists():
             return bundled
 
     here = Path(__file__).resolve()
     repo_candidate = here.parents[2] / "models" / "openwakeword"
-    if (repo_candidate / "hey_jarvis_v0.1.onnx").exists():
+    if (repo_candidate / "hey_kortik.onnx").exists():
         return repo_candidate
 
     base = os.getenv("LOCALAPPDATA") or str(Path.home() / "AppData" / "Local")
@@ -57,7 +57,7 @@ def threshold_from_sensitivity(sensitivity: float) -> float:
     """
     0.0 (strogo, malo lažnih pozitiva) .. 1.0 (osetljivo, hvata i tih govor).
 
-    OpenWakeWord „hey_jarvis" realno govor daje ~0.70-0.99, lažni okidači
+    OpenWakeWord „hey_kortik" realno govor daje ~0.70-0.99, lažni okidači
     < 0.30 — mapiramo 0..1 na 0.75..0.30.
     """
     value = min(1.0, max(0.0, float(sensitivity)))
@@ -102,7 +102,7 @@ class OpenWakeWordKws:
         from openwakeword.model import Model
 
         self._model = Model(
-            wakeword_models=[str(self.model_dir / "hey_jarvis_v0.1.onnx")],
+            wakeword_models=[str(self.model_dir / "hey_kortik.onnx")],
             inference_framework="onnx",
             melspec_model_path=str(self.model_dir / "melspectrogram.onnx"),
             embedding_model_path=str(self.model_dir / "embedding_model.onnx"),
@@ -112,7 +112,7 @@ class OpenWakeWordKws:
         # da ne „pojede" pocetak prve reci „Hey".
         self._model.predict(np.zeros(FRAME_SAMPLES * 5, dtype=np.int16))
         logger.info(
-            "OpenWakeWord spreman (threshold=%.2f, model=hey_jarvis)", self.threshold
+            "OpenWakeWord spreman (threshold=%.2f, model=hey_kortik)", self.threshold
         )
         return self
 
@@ -151,7 +151,7 @@ class OpenWakeWordKws:
 
     # ── obrada ──────────────────────────────────────────────────────────────
     def process(self, pcm_16k_mono: bytes) -> Optional[str]:
-        """Vraca 'hey_jarvis' kad skor prede prag, inace None. Ne baca izuzetke."""
+        """Vraca 'hey_kortik' kad skor prede prag, inace None. Ne baca izuzetke."""
         if self._model is None or not pcm_16k_mono:
             return None
 
@@ -171,7 +171,7 @@ class OpenWakeWordKws:
             return None
 
         if best >= self.threshold:
-            logger.info("Wake word detektovan: hey_jarvis (skor=%.3f)", best)
+            logger.info("Wake word detektovan: hey_kortik (skor=%.3f)", best)
             self.reset()
             return WAKE_LABEL
         return None

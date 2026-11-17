@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import platform as _platform
 import time
 from typing import Any, Dict, Optional
 
@@ -14,6 +15,7 @@ from PySide6.QtWidgets import (
     QFormLayout,
     QGroupBox,
     QHBoxLayout,
+    QInputDialog,
     QLabel,
     QLineEdit,
     QMainWindow,
@@ -30,11 +32,13 @@ from app.auth.device_flow import DeviceFlow
 from app.config import AppPaths, Settings, save_settings
 from app.core.parser import parse_command
 from app.i18n import i18n, tr, SUPPORTED_LANGUAGES
+from app.logs import tail_log
 from app.net.api import ApiError, ListenerApi
+from app.phrases import configure_phrases, recent_phrases, record_phrase
 from app.security.storage import SecretStore
 from app.ui.async_runner import AsyncRunner
 from app.updater.manifest import needs_update, validate_manifest
-from app.version import APP_NAME, APP_VERSION, UPDATE_CHANNEL, UPDATE_PUBLIC_KEY_HEX
+from app.version import APP_NAME, APP_VERSION, PLATFORM, UPDATE_CHANNEL, UPDATE_PUBLIC_KEY_HEX
 
 STYLE = """
 QMainWindow, QWidget { background: #0f1117; color: #e8eaf0; font-size: 13px; }
@@ -113,6 +117,7 @@ class MainWindow(QMainWindow):
 
         self.signals = UiSignals()
         self._wire_signals()
+        configure_phrases(self.paths.logs)
 
         self.setWindowTitle(f"{APP_NAME} {APP_VERSION}")
         self.resize(940, 660)
@@ -246,6 +251,61 @@ class MainWindow(QMainWindow):
             self.signals.command_result.emit(
                 {"status": e.code, "message": e.message, "http_status": e.status}
             )
+        except Exception as e:
+            self.signals.command_result.emit({"status": "error", "message": str(e), "http_status": 0})
+
+    # ── Prijava buga ────────────────────────────────────────────────────────
+    def _report_bug(self) -> None:
+        message, ok = QInputDialog.getMultiLineText(
+            self,
+            tr("report_bug_title"),
+            tr("report_bug_prompt"),
+            "",
+        )
+        if not ok:
+            return
+        message = (message or "").strip()
+        os_info = ""
+        try:
+            os_info = f"{_platform.system()} {_platform.release()}"
+        except Exception:
+            os_info = ""
+        log_tail = ""
+        try:
+            log_tail = tail_log(self.paths.logs, lines=40)
+        except Exception:
+            log_tail = ""
+        self._set_status(self.command_status, tr("report_sending"), "warn")
+        self.runner.submit(
+            self._task_report_bug(
+                message,
+                recent_phrases(),
+                os_info,
+                log_tail,
+            )
+        )
+
+    async def _task_report_bug(self, message: str, phrases: list, os_info: str, log_tail: str) -> None:
+        try:
+            token = await self._ensure_token()
+            if not token:
+                self.signals.command_result.emit({"status": "not_logged_in", "message": tr("report_not_logged_in")})
+                return
+            secret = (self.store.load() or {}).get("device_secret") or ""
+            result = await self.api.report_bug(
+                token,
+                secret,
+                message=message,
+                phrases=phrases,
+                app_version=APP_VERSION,
+                platform=PLATFORM,
+                language=getattr(self.settings, "language", "") or "sr",
+                os_info=os_info,
+                log_tail=log_tail,
+            )
+            self.signals.command_result.emit(result)
+        except ApiError as e:
+            self.signals.command_result.emit({"status": e.code, "message": e.message, "http_status": e.status})
         except Exception as e:
             self.signals.command_result.emit({"status": "error", "message": str(e), "http_status": 0})
 
@@ -398,6 +458,11 @@ class MainWindow(QMainWindow):
         header.addWidget(title)
         header.addStretch(1)
         header.addWidget(version)
+        self.report_btn = QPushButton(tr("report_bug_btn"))
+        self.report_btn.setObjectName("ghost")
+        self.report_btn.setToolTip(tr("report_bug_title"))
+        self.report_btn.clicked.connect(self._report_bug)
+        header.addWidget(self.report_btn)
         layout.addLayout(header)
 
         self.user_label = QLabel("Ulogovan")
@@ -719,6 +784,12 @@ class MainWindow(QMainWindow):
         message = str(data.get("message") or "")
         code = str(data.get("code") or status)
 
+        if status == "received":
+            self._set_status(self.command_status, f"📨 {message or tr('report_sent')}", "ok")
+            return
+        if status == "not_logged_in":
+            self._set_status(self.command_status, f"⚠️ {message or tr('report_not_logged_in')}", "warn")
+            return
         if status == "success":
             track = data.get("track")
             text = message or (tr("cmd_playing", track=track) if track else tr("cmd_executed"))
@@ -988,7 +1059,7 @@ class MainWindow(QMainWindow):
                 return f"model nije pronađen ({kws.model_dir})"
             kws.load()
             peak = kws.peak_score(pcm)
-            verdict = "HEY JARVIS ✔" if peak >= kws.threshold else "nema fraze „Hey Jarvis“"
+            verdict = "HEY KORTIK ✔" if peak >= kws.threshold else "nema fraze „Hey Kortik“"
             return f"max skor {peak:.3f} (prag {kws.threshold}) → {verdict}"
         except Exception as exc:
             return f"greška: {exc}"
@@ -1075,7 +1146,7 @@ class MainWindow(QMainWindow):
                 self,
                 "Test mikrofona",
                 f"Peak RMS: {peak}\n{verdict}\n\nWake word: {wake}\n"
-                "Savet: reci „Hey Jarvis“ blizu mikrofona; ako score/transkript ne raste, "
+                "Savet: reci „Hey Kortik“ blizu mikrofona; ako score/transkript ne raste, "
                 "pojačaj mikrofon ili izaberi drugi uređaj (🔍).",
             )
             if self._resume_listening_after_test:
@@ -1150,7 +1221,7 @@ class MainWindow(QMainWindow):
             self._apply_hotkey()
             self._set_status(
                 self.voice_label,
-                f"Slušanje: tražim „Hey Jarvis“ (STT={self.settings.stt_mode})",
+                f"Slušanje: tražim „Hey Kortik“ (STT={self.settings.stt_mode})",
                 "ok",
             )
             self.logger.info(
@@ -1191,6 +1262,15 @@ class MainWindow(QMainWindow):
         if kind == "wake":
             self.signals.listener_event.emit({"kind": "wake", "keyword": getattr(action, "keyword", "")})
         elif kind in ("wake_only", "text"):
+            if kind == "text":
+                try:
+                    record_phrase(
+                        getattr(action, "text", ""),
+                        engine=getattr(self.settings, "stt_mode", "") or "local",
+                        language=getattr(self.settings, "language", "") or "sr",
+                    )
+                except Exception:
+                    pass
             self.signals.listener_event.emit({"kind": kind, "text": getattr(action, "text", "")})
         elif kind == "command":
             self.signals.listener_event.emit(
