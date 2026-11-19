@@ -14,6 +14,7 @@ from typing import Any, Dict, Optional
 
 import aiohttp
 
+from app.net.ssl import create_client_ssl_context
 from app.security.request_signer import signed_headers
 from app.version import APP_VERSION, PLATFORM, USER_AGENT
 
@@ -43,12 +44,7 @@ class PendingApproval(ApiError):
 
 
 def _ssl_context() -> ssl.SSLContext:
-    context = ssl.create_default_context()
-    try:
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-    except Exception:
-        pass
-    return context
+    return create_client_ssl_context()
 
 
 def _error_code(status: int, data: Dict[str, Any]) -> str:

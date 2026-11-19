@@ -20,6 +20,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, Tuple
 
+from app.net.ssl import create_client_ssl_context
 from app.updater.manifest import verify_file_sha256
 
 logger = logging.getLogger("kortik.listener.updater")
@@ -63,10 +64,11 @@ async def download_installer(manifest: Dict[str, Any], dest_dir: Path, timeout_s
 
     logger.info("Preuzimam ažuriranje: %s", url)
     timeout = aiohttp.ClientTimeout(total=timeout_seconds, connect=15)
+    connector = aiohttp.TCPConnector(ssl=create_client_ssl_context())
     written = 0
 
     try:
-        async with aiohttp.ClientSession(timeout=timeout) as session:
+        async with aiohttp.ClientSession(timeout=timeout, connector=connector) as session:
             async with session.get(url) as response:
                 if response.status != 200:
                     raise UpdateError(f"Download nije uspeo (HTTP {response.status}).")
@@ -80,6 +82,12 @@ async def download_installer(manifest: Dict[str, Any], dest_dir: Path, timeout_s
     except UpdateError:
         partial.unlink(missing_ok=True)
         raise
+    except aiohttp.ClientConnectorCertificateError as e:
+        partial.unlink(missing_ok=True)
+        raise UpdateError(
+            "TLS sertifikat nije verifikovan — proveri datum/vreme sistema "
+            "ili antivirusni proksi koji presreće HTTPS."
+        ) from e
     except Exception as e:
         partial.unlink(missing_ok=True)
         raise UpdateError(f"Download greška: {e}") from e
