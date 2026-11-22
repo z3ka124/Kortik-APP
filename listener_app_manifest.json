@@ -1,12 +1,12 @@
 {
-  "version": "1.2.0",
+  "version": "1.2.1",
   "min_version": "0.1.0",
   "channel": "stable",
   "platform": "win-x64",
-  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.2.0/KortikListener-1.2.0-setup.exe",
-  "sha256": "792326cc3e27f3434d5608e5a8f3e64f07be45f946cad3ae6e9b4ee75c07541d",
-  "size": 129131045,
-  "notes": "Kortik Listener 1.2.0",
-  "published_at": "2026-11-12T21:08:00Z",
-  "sig": "13b84ecaf90b7e491a5814088f0972d893f3c6f2d65e7c5184909fd9be2b25ba5b5aabcceb51dfab89c1076e6f0474254663a56ce637b5f17c4cff1293d77606"
+  "url": "https://github.com/z3ka124/Kortik-APP/releases/download/listener-v1.2.1/KortikListener-1.2.1-setup.exe",
+  "sha256": "dc6992b0a31dc111eb9853b63ce7c1efeb7191192881f17aa06a71cad1590e94",
+  "size": 128673397,
+  "notes": "Kortik Listener 1.2.1",
+  "published_at": "2026-11-19T23:40:15Z",
+  "sig": "f2f330318e1e523b44a6e559a5b4e6ae7ae76ca5e886f7307ca6000b83469919f1f6d35346326db0c36f1862c5d3ff602327fa55374f98896e1e86e8d5f5120b"
 }
