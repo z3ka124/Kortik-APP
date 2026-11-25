@@ -111,6 +111,10 @@ a = Analysis(
     noarchive=False,
 )
 
+# Qt koristi Windows-ov icuuc.dll. PyInstaller ga ponekad pogrešno pokupi
+# sa PATH-a (npr. iz Popplera), gde ima nekompatibilne izvozne simbole.
+a.binaries = [entry for entry in a.binaries if entry[0].lower() != "icuuc.dll"]
+
 pyz = PYZ(a.pure)
 
 exe = EXE(

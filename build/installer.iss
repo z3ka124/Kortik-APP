@@ -46,6 +46,10 @@ Name: "autostart"; Description: "Pokreni Kortik Listener sa Windows-om"; GroupDe
 [Files]
 Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
+[InstallDelete]
+; Stare verzije mogu ostaviti nekompatibilni DLL i pri instalaciji novog builda.
+Type: files; Name: "{app}\_internal\icuuc.dll"
+
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\KortikListener.exe"
 Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
@@ -59,6 +63,8 @@ Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: 
 [Run]
 Filename: "{app}\KortikListener.exe"; Description: "{cm:LaunchProgram,{#MyAppName}}"; \
     Flags: nowait postinstall skipifsilent
+; Tihi update pokrenut iz aplikacije treba ponovo da otvori novu verziju.
+Filename: "{app}\KortikListener.exe"; Flags: nowait skipifnotsilent
 
 [UninstallDelete]
 ; Podaci korisnika (settings, DPAPI tajne, modeli) se NE brisu automatski.

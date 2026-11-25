@@ -7,7 +7,7 @@ Pravila (sve fail-closed):
   2. `url` mora biti HTTPS — nikad ne skidamo installer preko HTTP-a.
   3. Ed25519 potpis se proverava nad kanonizovanim JSON-om (bez `sig` polja)
      javnim kljucem ugradjenim u aplikaciju.
-  4. `version` mora biti veca od trenutne; `min_version` blokira preskakanje.
+  4. `version` ne sme biti starija; `min_version` ne sme biti veca od ciljne.
   5. Tek posle toga se proverava SHA-256 skinutog fajla.
 
 Kanonizacija je identicna kao u backendu (`listener_security.canonical_manifest`).
@@ -115,9 +115,9 @@ def validate_manifest(
         return False, "downgrade_blocked"
 
     min_version = str(manifest.get("min_version") or "").strip()
-    if min_version and parse_version(min_version):
-        if is_downgrade(current_version, min_version):
-            return False, "update_required"
+    if min_version:
+        if not parse_version(min_version) or is_downgrade(version, min_version):
+            return False, "bad_min_version"
 
     ok, reason = verify_signature(manifest, public_key_hex)
     if not ok:

@@ -67,8 +67,11 @@ jobs:
             Set-Content -Path "app\update_pubkey.txt" -Value $env:LISTENER_UPDATE_PUBKEY -Encoding ascii -NoNewline
           }
 
+          Set-Content -Path "app\_build_version.txt" -Value $v -Encoding ascii -NoNewline
           python -m PyInstaller build\pyinstaller.spec --noconfirm --clean `
             --distpath build\output --workpath build\work
+          if ($LASTEXITCODE -ne 0) { throw "PyInstaller nije uspeo (exit $LASTEXITCODE)" }
+          ./build/check-build.ps1
 
           $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
           if (-not (Test-Path $iscc)) { $iscc = "C:\Program Files\Inno Setup 6\ISCC.exe" }
@@ -79,7 +82,7 @@ jobs:
 
           if ($env:LISTENER_UPDATE_SIGNING_KEY) {
             $url = "https://github.com/${{ github.repository }}/releases/download/listener-v$v/KortikListener-$v-setup.exe"
-            python build\make_manifest.py --installer $installer --version $v --min-version $v `
+            python build\make_manifest.py --installer $installer --version $v --min-version 0.1.0 `
               --url $url --notes "Kortik Listener $v" --out listener_app_manifest.json
           }
 

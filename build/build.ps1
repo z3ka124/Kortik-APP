@@ -96,6 +96,7 @@ if ($LASTEXITCODE -ne 0) {
 if (-not (Test-Path "build\output\KortikListener\KortikListener.exe")) {
     throw "PyInstaller nije napravio KortikListener.exe"
 }
+& "$PSScriptRoot\check-build.ps1"
 
 Write-Host "== 5/7 Inno Setup ==" -ForegroundColor Cyan
 $iscc = $null

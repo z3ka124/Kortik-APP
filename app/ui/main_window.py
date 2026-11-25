@@ -339,9 +339,9 @@ class MainWindow(QMainWindow):
         try:
             manifest = await self.api.check_update(UPDATE_CHANNEL)
         except Exception:
+            self.signals.update_info.emit(None)
             return
-        if manifest:
-            self.signals.update_info.emit(manifest)
+        self.signals.update_info.emit(manifest)
 
     # ── Connect page ────────────────────────────────────────────────────────
     def _build_connect_page(self) -> QWidget:
@@ -841,12 +841,12 @@ class MainWindow(QMainWindow):
 
     def _on_update_info(self, manifest: dict) -> None:
         if not isinstance(manifest, dict):
+            self._set_status(self.update_label, "Provera ažuriranja nije uspela.", "warn")
             return
-        if not needs_update(manifest, APP_VERSION):
+        ok, reason = validate_manifest(manifest, APP_VERSION, UPDATE_PUBLIC_KEY_HEX)
+        if ok and not needs_update(manifest, APP_VERSION):
             self._set_status(self.update_label, "Aplikacija je ažurna.", "ok")
             return
-
-        ok, reason = validate_manifest(manifest, APP_VERSION, UPDATE_PUBLIC_KEY_HEX)
         if ok:
             self.pending_update = manifest
             self._set_status(

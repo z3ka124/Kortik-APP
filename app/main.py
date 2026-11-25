@@ -34,6 +34,11 @@ def main() -> int:
         print("PySide6 nije instaliran. Pokreni:  pip install -r requirements.txt")
         return 2
 
+    # Build provera učitava iste Qt module kao aplikacija, bez podešavanja,
+    # mikrofona, mreže ili uticaja na već pokrenutu instancu.
+    if "--check-qt" in sys.argv[1:]:
+        return 0
+
     from app.auth.device_flow import DeviceFlow
     from app.config import AppPaths, load_settings
     from app.logs import setup_logging

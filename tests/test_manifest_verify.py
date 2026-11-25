@@ -66,9 +66,13 @@ class ManifestValidateTests(unittest.TestCase):
         self.assertEqual((ok, reason), (False, "downgrade_blocked"))
 
     def test_min_version_forces_update(self):
-        manifest = self._manifest(version="1.2.0", min_version="1.5.0")
+        manifest = self._manifest(version="1.2.0", min_version="1.2.0")
         ok, reason = mf.validate_manifest(manifest, "1.0.0", self.public_hex)
-        self.assertEqual((ok, reason), (False, "update_required"))
+        self.assertEqual((ok, reason), (True, "ok"))
+
+    def test_min_version_above_target_is_invalid(self):
+        manifest = self._manifest(version="1.2.0", min_version="1.5.0")
+        self.assertEqual(mf.validate_manifest(manifest, "1.0.0", self.public_hex), (False, "bad_min_version"))
 
     def test_bad_sha_format(self):
         manifest = self._manifest(sha256="xyz")
