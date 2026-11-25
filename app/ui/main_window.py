@@ -7,7 +7,7 @@ import platform as _platform
 import time
 from typing import Any, Dict, Optional
 
-from PySide6.QtCore import QObject, Qt, QTimer, QUrl, Signal
+from PySide6.QtCore import QEasingCurve, QObject, QPropertyAnimation, Qt, QTimer, QUrl, Signal
 from PySide6.QtGui import QDesktopServices
 from PySide6.QtWidgets import (
     QCheckBox,
@@ -22,6 +22,7 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QProgressBar,
+    QScrollArea,
     QSlider,
     QStackedWidget,
     QVBoxLayout,
@@ -41,21 +42,37 @@ from app.updater.manifest import needs_update, validate_manifest
 from app.version import APP_NAME, APP_VERSION, PLATFORM, UPDATE_CHANNEL, UPDATE_PUBLIC_KEY_HEX
 
 STYLE = """
-QMainWindow, QWidget { background: #0f1117; color: #e8eaf0; font-size: 13px; }
-QLabel#title { font-size: 22px; font-weight: 700; color: #ffffff; }
-QLabel#subtitle { color: #9aa3b2; }
-QLabel#code { font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #8b5cf6; }
-QLabel#pill { background: #1b1f2a; border: 1px solid #2a3040; border-radius: 10px; padding: 6px 12px; }
-QLabel#ok { color: #34d399; }
-QLabel#warn { color: #fbbf24; }
-QLabel#err { color: #f87171; }
-QPushButton { background: #6d28d9; border: none; border-radius: 8px; padding: 9px 16px; font-weight: 600; }
-QPushButton:hover { background: #7c3aed; }
-QPushButton:disabled { background: #2a3040; color: #6b7280; }
-QPushButton#ghost { background: #1b1f2a; border: 1px solid #2a3040; }
-QLineEdit, QComboBox { background: #151922; border: 1px solid #2a3040; border-radius: 8px; padding: 7px; }
-QGroupBox { border: 1px solid #2a3040; border-radius: 10px; margin-top: 12px; padding: 12px; }
-QGroupBox::title { subcontrol-origin: margin; left: 12px; color: #9aa3b2; }
+QMainWindow, QWidget { background: #0b1020; color: #e9ecff; font-family: "Segoe UI"; font-size: 13px; }
+QLabel { background: transparent; }
+QLabel#title { font-size: 25px; font-weight: 750; color: #ffffff; }
+QLabel#subtitle { color: #a6b1d0; }
+QLabel#code { font-size: 34px; font-weight: 800; letter-spacing: 8px; color: #a995ff; padding: 12px; }
+QLabel#pill { background: #25234a; color: #c8bcff; border: 1px solid #494079; border-radius: 12px; padding: 6px 12px; }
+QLabel#ok { color: #62e3bd; }
+QLabel#warn { color: #ffd080; }
+QLabel#err { color: #ff91a2; }
+QPushButton { background: #7656e8; color: white; border: 1px solid #927cff; border-radius: 9px; padding: 9px 16px; font-weight: 600; }
+QPushButton:hover { background: #9277ff; }
+QPushButton:pressed { background: #6040c8; }
+QPushButton:disabled { background: #252b40; border-color: #303950; color: #818aa4; }
+QPushButton#ghost { background: #1b2540; border: 1px solid #35466b; color: #dbe4ff; }
+QPushButton#ghost:hover { background: #2b3b60; border-color: #718ad3; }
+QLineEdit, QComboBox { background: #101a30; border: 1px solid #344260; border-radius: 8px; padding: 7px; selection-background-color: #7656e8; }
+QLineEdit:focus, QComboBox:focus { border: 1px solid #a18aff; }
+QComboBox QAbstractItemView { background: #17213a; selection-background-color: #5945a6; color: #ffffff; }
+QGroupBox { background: #141d32; border: 1px solid #303e60; border-radius: 13px; margin-top: 14px; padding: 14px; font-weight: 600; }
+QGroupBox::title { subcontrol-origin: margin; left: 14px; padding: 0 6px; color: #b7a7ff; }
+QProgressBar { background: #26324c; border: none; border-radius: 4px; }
+QProgressBar::chunk { background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #6a8cff, stop:1 #5ce1c2); border-radius: 4px; }
+QSlider::groove:horizontal { height: 6px; background: #344260; border-radius: 3px; }
+QSlider::sub-page:horizontal { background: #8c78ff; border-radius: 3px; }
+QSlider::handle:horizontal { background: #c9bfff; width: 16px; margin: -5px 0; border-radius: 8px; }
+QCheckBox::indicator { width: 16px; height: 16px; border: 1px solid #607096; border-radius: 4px; background: #101a30; }
+QCheckBox::indicator:checked { background: #8066ef; border-color: #b2a0ff; }
+QScrollArea { border: none; }
+QScrollBar:vertical { background: #10182a; width: 10px; border-radius: 5px; }
+QScrollBar::handle:vertical { background: #46577b; border-radius: 5px; min-height: 30px; }
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0; }
 """
 
 _LANGUAGE_CHOICES = [
@@ -114,6 +131,7 @@ class MainWindow(QMainWindow):
         self.pending_update: Optional[Dict[str, Any]] = None
         self.listener_service: Any = None
         self._hotkey: Any = None
+        self._restore_listening_pending = False
 
         self.signals = UiSignals()
         self._wire_signals()
@@ -125,7 +143,11 @@ class MainWindow(QMainWindow):
 
         self.stack = QStackedWidget()
         self.stack.addWidget(self._build_connect_page())
-        self.stack.addWidget(self._build_dashboard_page())
+        dashboard = self._build_dashboard_page()
+        self.dashboard_scroll = QScrollArea()
+        self.dashboard_scroll.setWidgetResizable(True)
+        self.dashboard_scroll.setWidget(dashboard)
+        self.stack.addWidget(self.dashboard_scroll)
         self.setCentralWidget(self.stack)
 
         self.heartbeat_timer = QTimer(self)
@@ -161,7 +183,7 @@ class MainWindow(QMainWindow):
     def _restore_session(self) -> None:
         creds = self.store.load() or {}
         if creds.get("device_secret") and creds.get("refresh_token"):
-            self.stack.setCurrentWidget(self.dashboard_page)
+            self.stack.setCurrentWidget(self.dashboard_scroll)
             self._set_status(self.conn_status, "Obnavljam sesiju…", "warn")
             self.runner.submit(self._task_refresh_session())
         else:
@@ -199,7 +221,7 @@ class MainWindow(QMainWindow):
 
     # ── Heartbeat ───────────────────────────────────────────────────────────
     def _heartbeat_tick(self) -> None:
-        if self.stack.currentWidget() is not self.dashboard_page:
+        if self.stack.currentWidget() is not self.dashboard_scroll:
             return
         self.runner.submit(self._heartbeat_once())
 
@@ -332,7 +354,7 @@ class MainWindow(QMainWindow):
         self.conn_title.setObjectName("title")
         self.conn_subtitle = QLabel(
             "Upari ovaj računar sa svojim Discord nalogom. Wake word i prepoznavanje "
-            "komandi rade lokalno — audio ne napušta tvoj PC."
+            "komandi mogu da rade lokalno ili preko cloud prepoznavanja, prema tvom izboru."
         )
         self.conn_subtitle.setWordWrap(True)
         self.conn_subtitle.setObjectName("subtitle")
@@ -427,21 +449,21 @@ class MainWindow(QMainWindow):
         self._set_status(self.conn_status, message, "err")
 
     def _on_auth_ready(self, data: dict) -> None:
-        self.stack.setCurrentWidget(self.dashboard_page)
+        self.stack.setCurrentWidget(self.dashboard_scroll)
         self.heartbeat_timer.start()
         user_id = (data or {}).get("user_id")
         self.user_label.setText(f"Discord ID: {user_id}" if user_id else "Ulogovan")
         self.runner.submit(self._heartbeat_once())
 
         # Vrati prethodno stanje slusanja (bez modalnih dijaloga — ne blokira start).
-        if getattr(self.settings, "listening", False):
-            self._start_listening()
+        self._restore_listening_pending = bool(getattr(self.settings, "listening", False))
 
     def _on_session_error(self, message: str) -> None:
-        if self.stack.currentWidget() is self.dashboard_page:
-            self.heartbeat_timer.stop()
         self.pair_btn.setEnabled(True)
-        self._set_status(self.conn_status, message, "err")
+        if self.stack.currentWidget() is self.dashboard_scroll:
+            self._set_status(self.voice_label, message, "err")
+        else:
+            self._set_status(self.conn_status, message, "err")
 
     # ── Dashboard ───────────────────────────────────────────────────────────
     def _build_dashboard_page(self) -> QWidget:
@@ -492,6 +514,9 @@ class MainWindow(QMainWindow):
         self.listen_level = QProgressBar()
         self.listen_level.setRange(0, 100)
         self.listen_level.setValue(0)
+        self.level_animation = QPropertyAnimation(self.listen_level, b"value", self)
+        self.level_animation.setDuration(140)
+        self.level_animation.setEasingCurve(QEasingCurve.OutCubic)
         self.listen_level.setTextVisible(False)
         self.listen_level.setFixedHeight(8)
         self.listen_level.setFixedWidth(120)
@@ -740,6 +765,15 @@ class MainWindow(QMainWindow):
         )
 
         in_voice = bool(data.get("in_voice"))
+        if self._restore_listening_pending:
+            self._restore_listening_pending = False
+            if in_voice or not self.settings.listen_only_in_voice:
+                self._start_listening()
+            else:
+                self.settings.listening = False
+                save_settings(self.paths, self.settings)
+        elif self.listener_service is not None and self.settings.listen_only_in_voice and not in_voice:
+            self._stop_listening()
         if in_voice:
             channel = data.get("channel_name") or data.get("channel_id")
             guild = data.get("guild_id")
@@ -1211,7 +1245,7 @@ class MainWindow(QMainWindow):
                 on_level=lambda level: self.signals.listen_level.emit(int(level)),
                 on_error=lambda msg: self.signals.listener_event.emit({"kind": "error", "text": str(msg)}),
             )
-            self.runner.submit(self.listener_service.start())
+            self.runner.submit(self._start_listener_service(self.listener_service))
             self.listen_check.blockSignals(True)
             self.listen_check.setChecked(True)
             self.listen_check.blockSignals(False)
@@ -1237,6 +1271,12 @@ class MainWindow(QMainWindow):
             self.listen_check.setChecked(False)
             self.listen_check.blockSignals(False)
             self._set_status(self.voice_label, f"Slušanje: neuspešno ({e})", "err")
+
+    async def _start_listener_service(self, service: Any) -> None:
+        try:
+            await service.start()
+        except Exception as exc:
+            self.signals.listener_event.emit({"kind": "start_error", "text": str(exc), "service": service})
 
     def _stop_listening(self) -> None:
         service, self.listener_service = self.listener_service, None
@@ -1284,7 +1324,10 @@ class MainWindow(QMainWindow):
 
     def _on_listen_level(self, level: int) -> None:
         if hasattr(self, "listen_level"):
-            self.listen_level.setValue(max(0, min(100, int(level))))
+            self.level_animation.stop()
+            self.level_animation.setStartValue(self.listen_level.value())
+            self.level_animation.setEndValue(max(0, min(100, int(level))))
+            self.level_animation.start()
 
     def _on_listener_event(self, payload: dict) -> None:
         kind = (payload or {}).get("kind")
@@ -1318,6 +1361,10 @@ class MainWindow(QMainWindow):
                 f"🎙️ Komanda: {payload.get('command')} {payload.get('query')}".strip(),
                 "ok",
             )
+        elif kind == "start_error":
+            if payload.get("service") is self.listener_service:
+                self._stop_listening()
+                self._set_status(self.voice_label, "❌ Slušanje nije pokrenuto — " + str(payload.get("text") or ""), "err")
         elif kind == "error":
             # Petlja slusanja je pala — vrati UI u iskljuceno stanje (bez polu-otvorenog mikrofona).
             self._stop_listening()
@@ -1468,6 +1515,9 @@ class MainWindow(QMainWindow):
             return
 
         self.heartbeat_timer.stop()
+        self._restore_listening_pending = False
+        if self.listener_service is not None:
+            self._stop_listening()
         self.access_token = None
         self.token_expires_at = 0.0
         self.flow.unlink()
