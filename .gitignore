@@ -27,10 +27,14 @@ dist/
 *.zip
 
 # ── Modeli ──────────────────────────────────────────────────────────────────
-# Wake word model JE u repou (5.3 MB, int8) da CI i klonovi rade bez download-a.
+# Wake word modeli su u repou da CI i klonovi rade bez download-a.
 models/*
 !models/sherpa-kws/
 !models/sherpa-kws/**
+!models/openwakeword/
+!models/openwakeword/hey_kortik.onnx
+!models/openwakeword/melspectrogram.onnx
+!models/openwakeword/embedding_model.onnx
 *.onnx.bak
 *.bin
 *.gguf
